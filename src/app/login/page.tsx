@@ -4,8 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 
+import { LanguageToggle } from "@/components/language-toggle";
+import { useLanguage } from "@/components/language-provider";
+
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +27,7 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      setError("Invalid email or password.");
+      setError(t("invalidCredentials"));
       setIsSubmitting(false);
       return;
     }
@@ -34,13 +38,13 @@ export default function LoginPage() {
   return (
     <main className="card stack">
       <div className="stack">
-        <h1 className="title">Welcome back</h1>
-        <p className="subtitle">Sign in to search for devices.</p>
+        <h1 className="title">{t("loginTitle")}</h1>
+        <p className="subtitle">{t("loginSubtitle")}</p>
       </div>
 
       <form className="stack" onSubmit={onSubmit}>
         <label className="stack">
-          <span>Email</span>
+          <span>{t("email")}</span>
           <input
             className="input"
             type="email"
@@ -51,7 +55,7 @@ export default function LoginPage() {
         </label>
 
         <label className="stack">
-          <span>Password</span>
+          <span>{t("password")}</span>
           <input
             className="input"
             type="password"
@@ -64,15 +68,16 @@ export default function LoginPage() {
         {error ? <p className="error">{error}</p> : null}
 
         <button className="button" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Signing in..." : "Sign in"}
+          {isSubmitting ? t("signingIn") : t("signIn")}
         </button>
       </form>
 
       <div className="row">
         <a className="button button-secondary" href="/register">
-          Create account
+          {t("createAccount")}
         </a>
       </div>
+      <LanguageToggle />
     </main>
   );
 }

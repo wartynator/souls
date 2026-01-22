@@ -13,7 +13,7 @@ const deviceSchema = z.object({
 export async function GET(request: Request) {
   const session = await auth();
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "Neoprávnený prístup." }, { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
   const parsed = deviceSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Invalid input." }, { status: 400 });
+    return NextResponse.json({ error: "Neplatné údaje." }, { status: 400 });
   }
 
   const device = await prisma.device.create({

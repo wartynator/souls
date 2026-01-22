@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { LanguageProvider } from "@/components/language-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Device Lookup",
-  description: "Search devices by serial number or barcode.",
+  title: "Vyhľadávanie zariadení",
+  description: "Vyhľadávajte zariadenia podľa sériového čísla alebo čiarového kódu.",
 };
 
 export default function RootLayout({
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`app-body ${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

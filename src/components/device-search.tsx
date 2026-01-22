@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { useLanguage } from "@/components/language-provider";
+
 type Device = {
   id: string;
   serialNumber: string;
@@ -11,6 +13,7 @@ type Device = {
 };
 
 export function DeviceSearch() {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
   const [devices, setDevices] = useState<Device[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +26,7 @@ export function DeviceSearch() {
 
     const response = await fetch(`/api/devices?q=${encodeURIComponent(query)}`);
     if (!response.ok) {
-      setError("Could not load devices.");
+      setError(t("errorLoadDevices"));
       setIsLoading(false);
       return;
     }
@@ -38,13 +41,13 @@ export function DeviceSearch() {
       <form className="row" onSubmit={onSearch}>
         <input
           className="input"
-          placeholder="Search by serial number or barcode"
+          placeholder={t("searchPlaceholder")}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           required
         />
         <button className="button" type="submit" disabled={isLoading}>
-          {isLoading ? "Searching..." : "Search"}
+          {isLoading ? t("searching") : t("search")}
         </button>
       </form>
 
@@ -52,13 +55,21 @@ export function DeviceSearch() {
 
       <div className="results">
         {devices.length === 0 ? (
-          <p className="subtitle">No devices found yet.</p>
+          <p className="subtitle">{t("noDevices")}</p>
         ) : (
           devices.map((device) => (
             <div className="result-item" key={device.id}>
               <strong>{device.serialNumber}</strong>
-              {device.barcode ? <span>Barcode: {device.barcode}</span> : null}
-              {device.name ? <span>Name: {device.name}</span> : null}
+              {device.barcode ? (
+                <span>
+                  {t("barcode")}: {device.barcode}
+                </span>
+              ) : null}
+              {device.name ? (
+                <span>
+                  {t("name")}: {device.name}
+                </span>
+              ) : null}
             </div>
           ))
         )}

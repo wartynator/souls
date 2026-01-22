@@ -3,8 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { LanguageToggle } from "@/components/language-toggle";
+import { useLanguage } from "@/components/language-provider";
+
 export default function RegisterPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,7 +28,7 @@ export default function RegisterPage() {
 
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      setError(data?.error ?? "Registration failed.");
+      setError(data?.error ?? t("registrationFailed"));
       setIsSubmitting(false);
       return;
     }
@@ -35,13 +39,13 @@ export default function RegisterPage() {
   return (
     <main className="card stack">
       <div className="stack">
-        <h1 className="title">Create your account</h1>
-        <p className="subtitle">Set up access for the device lookup app.</p>
+        <h1 className="title">{t("registerTitle")}</h1>
+        <p className="subtitle">{t("registerSubtitle")}</p>
       </div>
 
       <form className="stack" onSubmit={onSubmit}>
         <label className="stack">
-          <span>Name</span>
+          <span>{t("nameLabel")}</span>
           <input
             className="input"
             type="text"
@@ -51,7 +55,7 @@ export default function RegisterPage() {
         </label>
 
         <label className="stack">
-          <span>Email</span>
+          <span>{t("email")}</span>
           <input
             className="input"
             type="email"
@@ -62,7 +66,7 @@ export default function RegisterPage() {
         </label>
 
         <label className="stack">
-          <span>Password</span>
+          <span>{t("password")}</span>
           <input
             className="input"
             type="password"
@@ -75,15 +79,16 @@ export default function RegisterPage() {
         {error ? <p className="error">{error}</p> : null}
 
         <button className="button" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Creating..." : "Create account"}
+          {isSubmitting ? t("registering") : t("register")}
         </button>
       </form>
 
       <div className="row">
         <a className="button button-secondary" href="/login">
-          Back to sign in
+          {t("backToSignIn")}
         </a>
       </div>
+      <LanguageToggle />
     </main>
   );
 }
