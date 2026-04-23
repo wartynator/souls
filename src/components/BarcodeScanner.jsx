@@ -29,6 +29,7 @@ async function buildDetector() {
 export default function BarcodeScanner({ onScan, onClose }) {
   const { t } = useLocale();
   const videoRef = useRef(null);
+  const canvasRef = useRef(null); // frame snapshots — more reliable on iOS than passing video directly
   const streamRef = useRef(null);
   const rafRef = useRef(null);
   const detectorRef = useRef(null);
@@ -46,6 +47,12 @@ export default function BarcodeScanner({ onScan, onClose }) {
       try {
         detectorRef.current = await buildDetector();
       } catch {
+        if (activeRef.current) setPhase("error");
+        return;
+      }
+
+      // navigator.mediaDevices is undefined when not on HTTPS / localhost
+      if (!navigator.mediaDevices?.getUserMedia) {
         if (activeRef.current) setPhase("error");
         return;
       }
@@ -83,12 +90,24 @@ export default function BarcodeScanner({ onScan, onClose }) {
 
     async function scan() {
       if (!loopActive || !videoRef.current || !detectorRef.current) return;
-      if (videoRef.current.readyState < 2) {
+
+      const video = videoRef.current;
+      // Wait until actual video data is available (readyState + non-zero dimensions)
+      if (video.readyState < 2 || video.videoWidth === 0) {
         rafRef.current = requestAnimationFrame(scan);
         return;
       }
+
       try {
-        const barcodes = await detectorRef.current.detect(videoRef.current);
+        // Capture the current frame to a canvas.
+        // Passing a canvas snapshot is far more reliable on iOS Safari than
+        // passing the video element directly to detect().
+        const canvas = canvasRef.current;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext("2d", { willReadFrequently: true }).drawImage(video, 0, 0);
+
+        const barcodes = await detectorRef.current.detect(canvas);
         if (barcodes.length > 0 && loopActive) {
           setDetected(barcodes[0].rawValue);
           setPhase("detected");
@@ -138,6 +157,8 @@ export default function BarcodeScanner({ onScan, onClose }) {
 
   return (
     <div className="scanner-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      {/* Hidden canvas used for frame capture — always mounted so canvasRef is available during scanning */}
+      <canvas ref={canvasRef} style={{ display: "none" }} aria-hidden="true" />
 
       {phase === "detected" ? (
         <div className="scanner__card">
