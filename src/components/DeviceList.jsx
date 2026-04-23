@@ -1,6 +1,8 @@
 import { useMemo } from "react";
+import { useLocale } from "../i18n.jsx";
 
 export default function DeviceList({ devices, query, onOpen }) {
+  const { t } = useLocale();
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let list = devices;
@@ -18,19 +20,16 @@ export default function DeviceList({ devices, query, onOpen }) {
   if (devices.length === 0) {
     return (
       <div className="empty">
-        <p className="empty__title">No devices yet</p>
-        <p className="empty__text">
-          Devices must be assigned to a contact. Add a contact first, then add their
-          devices.
-        </p>
+        <p className="empty__title">{t("emptyNoDevicesTitle")}</p>
+        <p className="empty__text">{t("emptyNoDevicesText")}</p>
       </div>
     );
   }
   if (filtered.length === 0) {
     return (
       <div className="empty" style={{ padding: "60px 20px" }}>
-        <p className="empty__title">No matches</p>
-        <p className="empty__text">Nothing found for &ldquo;{query}&rdquo;.</p>
+        <p className="empty__title">{t("emptyNoMatchesTitle")}</p>
+        <p className="empty__text">{t("emptyNoMatchesText", { query })}</p>
       </div>
     );
   }
@@ -47,12 +46,12 @@ export default function DeviceList({ devices, query, onOpen }) {
             </svg>
           </div>
           <div className="row__main">
-            <p className="row__name">{d.name || "Unnamed device"}</p>
+            <p className="row__name">{d.name || t("deviceUnnamed")}</p>
             <p className="row__owner">
               {d.ownerName ? (
                 <em>{d.ownerName}</em>
               ) : (
-                <em style={{ color: "var(--ink-faint)" }}>Owner removed</em>
+                <em style={{ color: "var(--ink-faint)" }}>{t("deviceOwnerRemoved")}</em>
               )}
               {d.notes && ` · ${d.notes}`}
             </p>

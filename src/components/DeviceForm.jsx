@@ -3,6 +3,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import Dialog from "./Dialog.jsx";
 import { useToast } from "./Toast.jsx";
+import { useLocale } from "../i18n.jsx";
 
 export default function DeviceForm({
   open,
@@ -14,6 +15,7 @@ export default function DeviceForm({
   onDelete,
 }) {
   const toast = useToast();
+  const { t } = useLocale();
   const createDevice = useMutation(api.devices.create);
   const updateDevice = useMutation(api.devices.update);
 
@@ -46,11 +48,11 @@ export default function DeviceForm({
     e.preventDefault();
     if (submitting) return;
     if (!name.trim()) {
-      toast.show("Device name is required");
+      toast.show(t("toastDeviceNameRequired"));
       return;
     }
     if (!ownerId) {
-      toast.show("Owner is required");
+      toast.show(t("toastOwnerRequired"));
       return;
     }
     setSubmitting(true);
@@ -62,19 +64,19 @@ export default function DeviceForm({
           name,
           notes: notes || undefined,
         });
-        toast.show("Device updated");
+        toast.show(t("toastDeviceUpdated"));
       } else {
         await createDevice({
           contactId: ownerId,
           name,
           notes: notes || undefined,
         });
-        toast.show("Device added");
+        toast.show(t("toastDeviceAdded"));
       }
       onClose();
     } catch (err) {
       console.error(err);
-      toast.show("Could not save device");
+      toast.show(t("toastCouldNotSaveDevice"));
     } finally {
       setSubmitting(false);
     }
@@ -84,7 +86,7 @@ export default function DeviceForm({
     <Dialog open={open} onClose={onClose}>
       <form className="dialog__form" onSubmit={handleSubmit}>
         <header className="dialog__head">
-          <h2 className="dialog__title">{editing ? "Edit device" : "New device"}</h2>
+          <h2 className="dialog__title">{editing ? t("deviceFormEdit") : t("deviceFormNew")}</h2>
           <button
             type="button"
             className="dialog__close"
@@ -96,7 +98,7 @@ export default function DeviceForm({
         </header>
         <div className="dialog__body">
           <label className="field">
-            <span className="field__label">Device name</span>
+            <span className="field__label">{t("fieldDeviceName")}</span>
             <input
               className="field__input"
               type="text"
@@ -104,12 +106,12 @@ export default function DeviceForm({
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. work laptop, home router"
+              placeholder={t("fieldDeviceNamePlaceholder")}
               autoFocus
             />
           </label>
           <label className="field">
-            <span className="field__label">Owner</span>
+            <span className="field__label">{t("fieldOwner")}</span>
             <select
               className="field__input"
               required
@@ -124,14 +126,14 @@ export default function DeviceForm({
             </select>
           </label>
           <label className="field">
-            <span className="field__label">Notes</span>
+            <span className="field__label">{t("fieldNotes")}</span>
             <textarea
               className="field__input field__input--area"
               rows={3}
               maxLength={500}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Model, serial number, firmware, or anything you want to remember"
+              placeholder={t("fieldNotesPlaceholder")}
             />
           </label>
         </div>
@@ -142,17 +144,17 @@ export default function DeviceForm({
               className="btn btn--text btn--danger"
               onClick={onDelete}
             >
-              Delete
+              {t("btnDelete")}
             </button>
           ) : (
             <span />
           )}
           <div className="dialog__foot-end">
             <button type="button" className="btn btn--ghost" onClick={onClose}>
-              Cancel
+              {t("btnCancel")}
             </button>
             <button type="submit" className="btn btn--primary" disabled={submitting}>
-              {submitting ? "Saving…" : "Save"}
+              {submitting ? t("btnSaving") : t("btnSave")}
             </button>
           </div>
         </footer>

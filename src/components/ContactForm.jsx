@@ -3,9 +3,11 @@ import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import Dialog from "./Dialog.jsx";
 import { useToast } from "./Toast.jsx";
+import { useLocale } from "../i18n.jsx";
 
 export default function ContactForm({ open, contactId, contacts, onClose, onDelete }) {
   const toast = useToast();
+  const { t } = useLocale();
   const createContact = useMutation(api.contacts.create);
   const updateContact = useMutation(api.contacts.update);
 
@@ -40,7 +42,7 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
     e.preventDefault();
     if (submitting) return;
     if (!name.trim()) {
-      toast.show("Name is required");
+      toast.show(t("toastNameRequired"));
       return;
     }
     setSubmitting(true);
@@ -53,7 +55,7 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
           email: email || undefined,
           notes: notes || undefined,
         });
-        toast.show("Contact updated");
+        toast.show(t("toastContactUpdated"));
       } else {
         await createContact({
           name,
@@ -61,12 +63,12 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
           email: email || undefined,
           notes: notes || undefined,
         });
-        toast.show("Contact added");
+        toast.show(t("toastContactAdded"));
       }
       onClose();
     } catch (err) {
       console.error(err);
-      toast.show("Could not save contact");
+      toast.show(t("toastCouldNotSaveContact"));
     } finally {
       setSubmitting(false);
     }
@@ -76,7 +78,7 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
     <Dialog open={open} onClose={onClose}>
       <form className="dialog__form" onSubmit={handleSubmit}>
         <header className="dialog__head">
-          <h2 className="dialog__title">{editing ? "Edit contact" : "New contact"}</h2>
+          <h2 className="dialog__title">{editing ? t("contactFormEdit") : t("contactFormNew")}</h2>
           <button
             type="button"
             className="dialog__close"
@@ -88,7 +90,7 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
         </header>
         <div className="dialog__body">
           <label className="field">
-            <span className="field__label">Name</span>
+            <span className="field__label">{t("fieldName")}</span>
             <input
               className="field__input"
               type="text"
@@ -101,7 +103,7 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
             />
           </label>
           <label className="field">
-            <span className="field__label">Phone</span>
+            <span className="field__label">{t("fieldPhone")}</span>
             <input
               className="field__input"
               type="tel"
@@ -112,7 +114,7 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
             />
           </label>
           <label className="field">
-            <span className="field__label">Email</span>
+            <span className="field__label">{t("fieldEmail")}</span>
             <input
               className="field__input"
               type="email"
@@ -123,7 +125,7 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
             />
           </label>
           <label className="field">
-            <span className="field__label">Notes</span>
+            <span className="field__label">{t("fieldNotes")}</span>
             <textarea
               className="field__input field__input--area"
               rows={2}
@@ -140,17 +142,17 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
               className="btn btn--text btn--danger"
               onClick={onDelete}
             >
-              Delete
+              {t("btnDelete")}
             </button>
           ) : (
             <span />
           )}
           <div className="dialog__foot-end">
             <button type="button" className="btn btn--ghost" onClick={onClose}>
-              Cancel
+              {t("btnCancel")}
             </button>
             <button type="submit" className="btn btn--primary" disabled={submitting}>
-              {submitting ? "Saving…" : "Save"}
+              {submitting ? t("btnSaving") : t("btnSave")}
             </button>
           </div>
         </footer>

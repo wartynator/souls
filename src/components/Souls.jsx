@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "../../convex/_generated/api";
 import ContactList from "./ContactList.jsx";
@@ -9,11 +9,12 @@ import ContactDetail from "./ContactDetail.jsx";
 import DeviceForm from "./DeviceForm.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 import { useToast } from "./Toast.jsx";
-import { useMutation } from "convex/react";
+import { useLocale } from "../i18n.jsx";
 
 export default function Souls() {
   const { signOut } = useAuthActions();
   const toast = useToast();
+  const { locale, setLocale, t, linkedDevicesWarning } = useLocale();
 
   const contacts = useQuery(api.contacts.list) ?? [];
   const devices = useQuery(api.devices.list) ?? [];
@@ -51,7 +52,7 @@ export default function Souls() {
       setContactFormOpen(true);
     } else {
       if (contacts.length === 0) {
-        toast.show("Add a contact first");
+        toast.show(t("toastAddContactFirst"));
         setTab("contacts");
         return;
       }
@@ -80,11 +81,8 @@ export default function Souls() {
     setConfirm({
       kind: "contact",
       id: c._id,
-      title: `Delete ${c.name}?`,
-      text:
-        linked > 0
-          ? `This will also remove ${linked} linked ${linked === 1 ? "device" : "devices"}. This cannot be undone.`
-          : "This cannot be undone.",
+      title: t("confirmDeleteItem", { name: c.name }),
+      text: linked > 0 ? linkedDevicesWarning(linked) : t("confirmCannotUndo"),
     });
   };
 
@@ -107,8 +105,8 @@ export default function Souls() {
     setConfirm({
       kind: "device",
       id: d._id,
-      title: `Delete ${d.name}?`,
-      text: "This cannot be undone.",
+      title: t("confirmDeleteItem", { name: d.name }),
+      text: t("confirmCannotUndo"),
     });
   };
 
@@ -119,15 +117,15 @@ export default function Souls() {
         await deleteContact({ id: confirm.id });
         setDetailOpen(false);
         setContactFormOpen(false);
-        toast.show("Contact deleted");
+        toast.show(t("toastContactDeleted"));
       } else {
         await deleteDevice({ id: confirm.id });
         setDeviceFormOpen(false);
-        toast.show("Device deleted");
+        toast.show(t("toastDeviceDeleted"));
       }
     } catch (err) {
       console.error(err);
-      toast.show("Something went wrong");
+      toast.show(t("toastSomethingWentWrong"));
     }
     setConfirm(null);
   };
@@ -143,8 +141,16 @@ export default function Souls() {
             {currentUser?.email && (
               <span className="header__email">{currentUser.email}</span>
             )}
+            <button
+              className={`btn btn--text${locale === "sk" ? " is-active" : ""}`}
+              style={{ fontWeight: locale === "sk" ? 700 : 400 }}
+              onClick={() => setLocale(locale === "en" ? "sk" : "en")}
+              aria-label="Toggle language"
+            >
+              {locale === "en" ? "SK" : "EN"}
+            </button>
             <button className="btn btn--text" onClick={() => signOut()}>
-              Sign out
+              {t("headerSignOut")}
             </button>
           </div>
         </div>
@@ -154,14 +160,14 @@ export default function Souls() {
             onClick={() => handleTab("contacts")}
             role="tab"
           >
-            Contacts <span className="tab__count">{contacts.length}</span>
+            {t("tabContacts")} <span className="tab__count">{contacts.length}</span>
           </button>
           <button
             className={`tab${tab === "devices" ? " is-active" : ""}`}
             onClick={() => handleTab("devices")}
             role="tab"
           >
-            Devices <span className="tab__count">{devices.length}</span>
+            {t("tabDevices")} <span className="tab__count">{devices.length}</span>
           </button>
         </nav>
       </header>
@@ -175,14 +181,14 @@ export default function Souls() {
           <input
             className="search__input"
             type="search"
-            placeholder={tab === "contacts" ? "Search contacts" : "Search devices"}
+            placeholder={tab === "contacts" ? t("searchContacts") : t("searchDevices")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
         <button className="btn btn--primary" onClick={handleAdd}>
           <span aria-hidden="true">+</span>
-          <span>{tab === "contacts" ? "Add contact" : "Add device"}</span>
+          <span>{tab === "contacts" ? t("addContact") : t("addDevice")}</span>
         </button>
       </div>
 
@@ -207,11 +213,8 @@ export default function Souls() {
             setConfirm({
               kind: "contact",
               id: c._id,
-              title: `Delete ${c.name}?`,
-              text:
-                linked > 0
-                  ? `This will also remove ${linked} linked ${linked === 1 ? "device" : "devices"}. This cannot be undone.`
-                  : "This cannot be undone.",
+              title: t("confirmDeleteItem", { name: c.name }),
+              text: linked > 0 ? linkedDevicesWarning(linked) : t("confirmCannotUndo"),
             });
           }
         }}

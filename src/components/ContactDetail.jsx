@@ -1,4 +1,5 @@
 import Dialog from "./Dialog.jsx";
+import { useLocale } from "../i18n.jsx";
 
 export default function ContactDetail({
   open,
@@ -11,6 +12,7 @@ export default function ContactDetail({
   onAddDevice,
   onOpenDevice,
 }) {
+  const { t } = useLocale();
   const contact = contactId ? contacts.find((c) => c._id === contactId) : null;
   const linkedDevices = contact
     ? [...devices.filter((d) => d.contactId === contact._id)].sort((a, b) =>
@@ -42,7 +44,7 @@ export default function ContactDetail({
           <dl className="detail">
             {contact.phone && (
               <div className="detail__row">
-                <dt>Phone</dt>
+                <dt>{t("detailPhone")}</dt>
                 <dd>
                   <a href={`tel:${contact.phone.replace(/\s+/g, "")}`}>{contact.phone}</a>
                 </dd>
@@ -50,7 +52,7 @@ export default function ContactDetail({
             )}
             {contact.email && (
               <div className="detail__row">
-                <dt>Email</dt>
+                <dt>{t("detailEmail")}</dt>
                 <dd>
                   <a href={`mailto:${contact.email}`}>{contact.email}</a>
                 </dd>
@@ -58,7 +60,7 @@ export default function ContactDetail({
             )}
             {contact.notes && (
               <div className="detail__row">
-                <dt>Notes</dt>
+                <dt>{t("detailNotes")}</dt>
                 <dd style={{ whiteSpace: "pre-wrap" }}>{contact.notes}</dd>
               </div>
             )}
@@ -66,17 +68,17 @@ export default function ContactDetail({
 
           <div className="devices-section">
             <div className="devices-section__head">
-              <h3 className="devices-section__title">Devices</h3>
+              <h3 className="devices-section__title">{t("detailDevices")}</h3>
               <button
                 type="button"
                 className="btn btn--ghost btn--small"
                 onClick={() => onAddDevice(contact._id)}
               >
-                + Add device
+                {t("detailAddDevice")}
               </button>
             </div>
             {linkedDevices.length === 0 ? (
-              <p className="devices-section__empty">No devices linked to this contact.</p>
+              <p className="devices-section__empty">{t("detailNoDevices")}</p>
             ) : (
               <div className="devices-section__list">
                 {linkedDevices.map((d) => (
@@ -116,14 +118,14 @@ export default function ContactDetail({
         </div>
         <footer className="dialog__foot">
           <button type="button" className="btn btn--text btn--danger" onClick={onDelete}>
-            Delete contact
+            {t("detailDeleteContact")}
           </button>
           <div className="dialog__foot-end">
             <button type="button" className="btn btn--ghost" onClick={onClose}>
-              Close
+              {t("btnClose")}
             </button>
             <button type="button" className="btn btn--primary" onClick={onEdit}>
-              Edit
+              {t("btnEdit")}
             </button>
           </div>
         </footer>
