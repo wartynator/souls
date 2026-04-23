@@ -29,7 +29,7 @@ async function buildDetector() {
 export default function BarcodeScanner({ onScan, onClose }) {
   const { t } = useLocale();
   const videoRef = useRef(null);
-  const canvasRef = useRef(null); // frame snapshots — more reliable on iOS than passing video directly
+  const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const rafRef = useRef(null);
   const detectorRef = useRef(null);
@@ -51,7 +51,7 @@ export default function BarcodeScanner({ onScan, onClose }) {
         return;
       }
 
-      // navigator.mediaDevices is undefined when not on HTTPS / localhost
+      // navigator.mediaDevices is undefined on non-HTTPS origins
       if (!navigator.mediaDevices?.getUserMedia) {
         if (activeRef.current) setPhase("error");
         return;
@@ -92,16 +92,14 @@ export default function BarcodeScanner({ onScan, onClose }) {
       if (!loopActive || !videoRef.current || !detectorRef.current) return;
 
       const video = videoRef.current;
-      // Wait until actual video data is available (readyState + non-zero dimensions)
       if (video.readyState < 2 || video.videoWidth === 0) {
         rafRef.current = requestAnimationFrame(scan);
         return;
       }
 
       try {
-        // Capture the current frame to a canvas.
-        // Passing a canvas snapshot is far more reliable on iOS Safari than
-        // passing the video element directly to detect().
+        // Capture frame to canvas — much more reliable on iOS than passing
+        // the video element directly to detect()
         const canvas = canvasRef.current;
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -126,72 +124,79 @@ export default function BarcodeScanner({ onScan, onClose }) {
     };
   }, [phase]);
 
-  // ── error state — shown as a proper dialog ───────────────────────────────
-
-  if (phase === "error") {
-    return (
-      <Dialog open onClose={onClose} size="small">
-        <div className="dialog__form">
-          <header className="dialog__head">
-            <h2 className="dialog__title">{t("scanBarcode")}</h2>
-            <button type="button" className="dialog__close" onClick={onClose} aria-label="Close">
-              ×
-            </button>
-          </header>
-          <div className="dialog__body">
-            <p className="confirm__text">{t("scannerCameraError")}</p>
-          </div>
-          <footer className="dialog__foot">
-            <div className="dialog__foot-end" style={{ marginLeft: "auto" }}>
-              <button type="button" className="btn btn--primary" onClick={onClose}>
-                {t("btnClose")}
-              </button>
-            </div>
-          </footer>
-        </div>
-      </Dialog>
-    );
-  }
-
-  // ── camera overlay ───────────────────────────────────────────────────────
+  // ── render — always a Dialog so it lives in the browser top layer ────────
 
   return (
-    <div className="scanner-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      {/* Hidden canvas used for frame capture — always mounted so canvasRef is available during scanning */}
-      <canvas ref={canvasRef} style={{ display: "none" }} aria-hidden="true" />
-
-      {phase === "detected" ? (
-        <div className="scanner__card">
-          <p className="scanner__card-label">{t("scannerDetected")}</p>
-          <p className="scanner__result-value">{detected}</p>
-          <div className="scanner__actions">
-            <button className="btn btn--ghost" onClick={() => setPhase("scanning")}>
-              {t("scannerRescan")}
-            </button>
-            <button className="btn btn--primary" onClick={() => onScan(detected)}>
-              {t("scannerUse")}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="scanner__frame">
-            <video
-              ref={videoRef}
-              className="scanner__video"
-              playsInline
-              muted
-              aria-label={t("scannerHint")}
-            />
-            <div className="scanner__reticle" aria-hidden="true" />
-          </div>
-          <p className="scanner__hint">{t("scannerHint")}</p>
-          <button className="btn scanner__cancel" onClick={onClose}>
-            {t("btnCancel")}
+    <Dialog open onClose={onClose} size="scanner">
+      <div className="dialog__form">
+        <header className="dialog__head">
+          <h2 className="dialog__title">{t("scanBarcode")}</h2>
+          <button type="button" className="dialog__close" onClick={onClose} aria-label="Close">
+            ×
           </button>
-        </>
-      )}
+        </header>
 
-    </div>
+        {phase === "error" && (
+          <>
+            <div className="dialog__body">
+              <p className="confirm__text">{t("scannerCameraError")}</p>
+            </div>
+            <footer className="dialog__foot">
+              <div className="dialog__foot-end" style={{ marginLeft: "auto" }}>
+                <button type="button" className="btn btn--primary" onClick={onClose}>
+                  {t("btnClose")}
+                </button>
+              </div>
+            </footer>
+          </>
+        )}
+
+        {phase === "detected" && (
+          <>
+            <div className="dialog__body" style={{ textAlign: "center" }}>
+              <p className="scanner__card-label">{t("scannerDetected")}</p>
+              <p className="scanner__result-value">{detected}</p>
+            </div>
+            <footer className="dialog__foot">
+              <div className="dialog__foot-end" style={{ marginLeft: "auto" }}>
+                <button type="button" className="btn btn--ghost" onClick={() => setPhase("scanning")}>
+                  {t("scannerRescan")}
+                </button>
+                <button type="button" className="btn btn--primary" onClick={() => onScan(detected)}>
+                  {t("scannerUse")}
+                </button>
+              </div>
+            </footer>
+          </>
+        )}
+
+        {(phase === "starting" || phase === "scanning") && (
+          <>
+            <div className="dialog__body dialog__body--scanner">
+              {/* Hidden canvas for iOS-compatible frame capture */}
+              <canvas ref={canvasRef} style={{ display: "none" }} aria-hidden="true" />
+              <div className="scanner__frame">
+                <video
+                  ref={videoRef}
+                  className="scanner__video"
+                  playsInline
+                  muted
+                  aria-label={t("scannerHint")}
+                />
+                <div className="scanner__reticle" aria-hidden="true" />
+              </div>
+              <p className="scanner__hint">{t("scannerHint")}</p>
+            </div>
+            <footer className="dialog__foot">
+              <div className="dialog__foot-end" style={{ marginLeft: "auto" }}>
+                <button type="button" className="btn btn--ghost" onClick={onClose}>
+                  {t("btnCancel")}
+                </button>
+              </div>
+            </footer>
+          </>
+        )}
+      </div>
+    </Dialog>
   );
 }
