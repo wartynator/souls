@@ -57,13 +57,35 @@ a:hover { text-decoration: underline; }
   margin-bottom: 24px;
   border-bottom: 1px solid var(--rule);
 }
+.header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
 .header__title {
   font-family: var(--font-serif);
   font-weight: 400;
   font-size: 44px;
   letter-spacing: -0.02em;
-  margin: 0 0 28px;
+  margin: 0;
   line-height: 1;
+}
+.header__user {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.header__email {
+  font-size: 13px;
+  color: var(--ink-mute);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 6px;
 }
 
 .tabs {
@@ -664,19 +686,70 @@ select.field__input {
   from { opacity: 0; transform: translateY(6px) scale(.98); }
   to   { opacity: 1; transform: translateY(0)   scale(1); }
 }
+@keyframes sheetIn {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
 
 /* ---------- Responsive ---------- */
 @media (max-width: 560px) {
-  .app { padding: 28px 16px 100px; }
-  .header__title { font-size: 36px; }
-  .header { padding-bottom: 20px; margin-bottom: 16px; }
-  .tabs { gap: 20px; }
-  .toolbar { flex-direction: column; align-items: stretch; }
-  .toolbar .btn { justify-content: center; }
-  .dialog__body { padding: 16px 20px; }
+  /* Layout */
+  .app { padding: 20px 16px 100px; }
+
+  /* Header */
+  .header { padding-bottom: 16px; margin-bottom: 14px; }
+  .header__top { margin-bottom: 16px; }
+  .header__title { font-size: 34px; }
+  .header__email { display: none; }
+  .tabs { gap: 16px; }
+  .tab { font-size: 13px; }
+
+  /* Toolbar */
+  .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
+  .toolbar .btn { justify-content: center; padding: 12px 16px; }
+
+  /* Touch targets — rows should be at least 44 px tall */
+  .row { padding: 12px 8px; min-height: 44px; }
+  .device-item { padding: 12px 4px; min-height: 44px; }
+  .btn { min-height: 44px; }
+  .btn--small { min-height: 36px; }
+
+  /* Dialogs → bottom sheets */
+  .dialog {
+    position: fixed !important;
+    inset: auto 0 0 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 92svh;
+    border-radius: 20px 20px 0 0;
+  }
+  .dialog[open] { animation: sheetIn .28s cubic-bezier(0.32, 0.72, 0, 1); }
   .dialog__head { padding: 18px 20px 14px; }
   .dialog__title { font-size: 22px; }
+  .dialog__body { padding: 16px 20px; }
+  .dialog__foot { padding: 12px 16px 20px; }
+
+  /* Confirm dialog — also a bottom sheet, no special sizing needed */
+  .dialog--small {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Scanner — full screen on mobile */
+  .dialog--scanner {
+    max-height: 100svh !important;
+    border-radius: 0 !important;
+  }
+
+  /* Detail field labels */
   .detail__row { grid-template-columns: 56px 1fr; }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+  .header__title { font-size: 30px; }
+  .tab__count { display: none; }
 }
 
 /* ---------- Focus ---------- */
