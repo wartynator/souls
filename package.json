@@ -13,6 +13,7 @@
   "dependencies": {
     "@auth/core": "0.37.0",
     "@convex-dev/auth": "^0.0.87",
+    "barcode-detector": "^3.1.2",
     "convex": "^1.17.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
