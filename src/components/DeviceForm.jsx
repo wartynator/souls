@@ -4,6 +4,7 @@ import { api } from "../../convex/_generated/api";
 import Dialog from "./Dialog.jsx";
 import { useToast } from "./Toast.jsx";
 import { useLocale } from "../i18n.jsx";
+import BarcodeScanner from "./BarcodeScanner.jsx";
 
 export default function DeviceForm({
   open,
@@ -24,6 +25,8 @@ export default function DeviceForm({
   const [name, setName] = useState("");
   const [ownerId, setOwnerId] = useState("");
   const [notes, setNotes] = useState("");
+  const [barcode, setBarcode] = useState("");
+  const [scannerOpen, setScannerOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const sortedContacts = [...contacts].sort((a, b) =>
@@ -36,10 +39,12 @@ export default function DeviceForm({
       setName(editing.name || "");
       setOwnerId(editing.contactId);
       setNotes(editing.notes || "");
+      setBarcode(editing.barcode || "");
     } else {
       setName("");
       setOwnerId(presetOwnerId || sortedContacts[0]?._id || "");
       setNotes("");
+      setBarcode("");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, deviceId, presetOwnerId]);
@@ -63,6 +68,7 @@ export default function DeviceForm({
           contactId: ownerId,
           name,
           notes: notes || undefined,
+          barcode: barcode || undefined,
         });
         toast.show(t("toastDeviceUpdated"));
       } else {
@@ -70,6 +76,7 @@ export default function DeviceForm({
           contactId: ownerId,
           name,
           notes: notes || undefined,
+          barcode: barcode || undefined,
         });
         toast.show(t("toastDeviceAdded"));
       }
@@ -83,6 +90,13 @@ export default function DeviceForm({
   };
 
   return (
+    <>
+    {scannerOpen && (
+      <BarcodeScanner
+        onScan={(value) => { setBarcode(value); setScannerOpen(false); }}
+        onClose={() => setScannerOpen(false)}
+      />
+    )}
     <Dialog open={open} onClose={onClose}>
       <form className="dialog__form" onSubmit={handleSubmit}>
         <header className="dialog__head">
@@ -136,6 +150,35 @@ export default function DeviceForm({
               placeholder={t("fieldNotesPlaceholder")}
             />
           </label>
+          <label className="field">
+            <span className="field__label">{t("fieldBarcode")}</span>
+            <div className="field__input-row">
+              <input
+                className="field__input"
+                type="text"
+                maxLength={100}
+                value={barcode}
+                onChange={(e) => setBarcode(e.target.value)}
+                placeholder={t("fieldBarcodePlaceholder")}
+              />
+              <button
+                type="button"
+                className="btn btn--ghost btn--small field__scan-btn"
+                onClick={() => setScannerOpen(true)}
+                title={t("scanBarcode")}
+                aria-label={t("scanBarcode")}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="2" y="4" width="2" height="16" fill="currentColor" />
+                  <rect x="6" y="4" width="1" height="16" fill="currentColor" />
+                  <rect x="9" y="4" width="2" height="16" fill="currentColor" />
+                  <rect x="13" y="4" width="1" height="16" fill="currentColor" />
+                  <rect x="16" y="4" width="3" height="16" fill="currentColor" />
+                  <rect x="21" y="4" width="1" height="16" fill="currentColor" />
+                </svg>
+              </button>
+            </div>
+          </label>
         </div>
         <footer className="dialog__foot">
           {editing ? (
@@ -160,5 +203,6 @@ export default function DeviceForm({
         </footer>
       </form>
     </Dialog>
+    </>
   );
 }

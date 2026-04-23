@@ -96,6 +96,7 @@ export const create = mutation({
     contactId: v.id("contacts"),
     name: v.string(),
     notes: v.optional(v.string()),
+    barcode: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
@@ -109,6 +110,7 @@ export const create = mutation({
       contactId: args.contactId,
       name,
       notes: args.notes?.trim() || undefined,
+      barcode: args.barcode?.trim() || undefined,
     });
   },
 });
@@ -119,6 +121,7 @@ export const update = mutation({
     contactId: v.id("contacts"),
     name: v.string(),
     notes: v.optional(v.string()),
+    barcode: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
@@ -132,6 +135,7 @@ export const update = mutation({
       contactId: args.contactId,
       name,
       notes: args.notes?.trim() || undefined,
+      barcode: args.barcode?.trim() || undefined,
     });
   },
 });

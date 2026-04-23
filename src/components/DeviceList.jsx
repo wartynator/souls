@@ -55,6 +55,9 @@ export default function DeviceList({ devices, query, onOpen }) {
               )}
               {d.notes && ` · ${d.notes}`}
             </p>
+            {d.barcode && (
+              <p className="row__barcode">{d.barcode}</p>
+            )}
           </div>
           <svg
             className="row__chev"
