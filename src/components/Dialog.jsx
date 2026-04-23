@@ -42,7 +42,7 @@ export default function Dialog({ open, onClose, size = "normal", children }) {
   return (
     <dialog
       ref={ref}
-      className={`dialog${size === "small" ? " dialog--small" : ""}`}
+      className={`dialog${size !== "normal" ? ` dialog--${size}` : ""}`}
       onClick={onBackdropClick}
     >
       {children}
