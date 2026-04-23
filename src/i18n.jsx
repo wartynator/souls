@@ -84,6 +84,18 @@ const en = {
   // device list
   deviceUnnamed: "Unnamed device",
   deviceOwnerRemoved: "Owner removed",
+  // barcode
+  fieldBarcode: "Barcode",
+  fieldBarcodePlaceholder: "Scan or enter barcode",
+  scanBarcode: "Scan barcode",
+  scannerHint: "Point the camera at a barcode",
+  scannerDetected: "Barcode detected",
+  scannerRescan: "Scan again",
+  scannerUse: "Use",
+  scannerNotSupported:
+    "Barcode scanning is not supported in this browser. Please type the code manually.",
+  scannerCameraError:
+    "Could not access the camera. Please check your permissions.",
   // confirm dialog
   confirmDelete: "Delete",
   confirmCannotUndo: "This cannot be undone.",
@@ -178,6 +190,18 @@ const sk = {
   // device list
   deviceUnnamed: "Zariadenie bez názvu",
   deviceOwnerRemoved: "Vlastník bol odstránený",
+  // barcode
+  fieldBarcode: "Čiarový kód",
+  fieldBarcodePlaceholder: "Naskenujte alebo zadajte čiarový kód",
+  scanBarcode: "Skenovať čiarový kód",
+  scannerHint: "Namierenou kamerou na čiarový kód",
+  scannerDetected: "Čiarový kód naskenovaný",
+  scannerRescan: "Skenovať znova",
+  scannerUse: "Použiť",
+  scannerNotSupported:
+    "Skenovanie čiarových kódov nie je v tomto prehliadači podporované. Zadajte kód ručne.",
+  scannerCameraError:
+    "Nepodarilo sa získať prístup ku kamere. Skontrolujte povolenia.",
   // confirm dialog
   confirmDelete: "Vymazať",
   confirmCannotUndo: "Toto nie je možné vrátiť späť.",

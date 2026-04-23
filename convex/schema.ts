@@ -31,6 +31,7 @@ export default defineSchema({
     contactId: v.id("contacts"),
     name: v.string(),
     notes: v.optional(v.string()),
+    barcode: v.optional(v.string()),
   })
     .index("by_user", ["userId"])
     .index("by_contact", ["contactId"])
