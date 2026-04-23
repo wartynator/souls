@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useLocale } from "../i18n.jsx";
 
 function initials(name = "") {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -13,6 +14,7 @@ function firstLetter(name = "") {
 }
 
 export default function ContactList({ contacts, query, onOpen }) {
+  const { t, deviceCountLabel } = useLocale();
   const { grouped, filteredCount } = useMemo(() => {
     const q = query.trim().toLowerCase();
     let list = contacts;
@@ -46,9 +48,9 @@ export default function ContactList({ contacts, query, onOpen }) {
   if (contacts.length === 0) {
     return (
       <div className="empty">
-        <p className="empty__title">No contacts yet</p>
+        <p className="empty__title">{t("emptyNoContactsTitle")}</p>
         <p className="empty__text">
-          Tap <em>Add contact</em> to create your first entry.
+          {t("emptyNoContactsText", { addContact: t("addContact") })}
         </p>
       </div>
     );
@@ -56,8 +58,8 @@ export default function ContactList({ contacts, query, onOpen }) {
   if (filteredCount === 0) {
     return (
       <div className="empty" style={{ padding: "60px 20px" }}>
-        <p className="empty__title">No matches</p>
-        <p className="empty__text">Nothing found for &ldquo;{query}&rdquo;.</p>
+        <p className="empty__title">{t("emptyNoMatchesTitle")}</p>
+        <p className="empty__text">{t("emptyNoMatchesText", { query })}</p>
       </div>
     );
   }
@@ -77,7 +79,7 @@ export default function ContactList({ contacts, query, onOpen }) {
           >
             <div className="row__avatar">{initials(item.contact.name)}</div>
             <div className="row__main">
-              <p className="row__name">{item.contact.name || "Unnamed"}</p>
+              <p className="row__name">{item.contact.name || t("contactUnnamed")}</p>
               {(item.contact.phone || item.contact.email) && (
                 <p className="row__sub">
                   {item.contact.phone || item.contact.email}
@@ -85,8 +87,7 @@ export default function ContactList({ contacts, query, onOpen }) {
               )}
             </div>
             <div className="row__meta">
-              {item.contact.deviceCount ?? 0}{" "}
-              {(item.contact.deviceCount ?? 0) === 1 ? "device" : "devices"}
+              {deviceCountLabel(item.contact.deviceCount ?? 0)}
             </div>
             <svg
               className="row__chev"
