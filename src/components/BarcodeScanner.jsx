@@ -1,12 +1,30 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocale } from "../i18n.jsx";
+import Dialog from "./Dialog.jsx";
 
-// Formats supported by BarcodeDetector — most common device/product codes
 const FORMATS = [
   "aztec", "code_128", "code_39", "code_93", "codabar",
   "data_matrix", "ean_13", "ean_8", "itf", "pdf417",
   "qr_code", "upc_a", "upc_e",
 ];
+
+/**
+ * Returns a BarcodeDetector instance.
+ * Uses the native API when available (Android Chrome, Safari 17.4+),
+ * otherwise lazy-loads the ZXing-WASM polyfill so desktop browsers work too.
+ */
+async function buildDetector() {
+  const Ctor =
+    "BarcodeDetector" in window
+      ? window.BarcodeDetector
+      : (await import("barcode-detector/pure")).BarcodeDetector;
+
+  try {
+    return new Ctor({ formats: FORMATS });
+  } catch {
+    return new Ctor(); // some implementations reject unknown formats
+  }
+}
 
 export default function BarcodeScanner({ onScan, onClose }) {
   const { t } = useLocale();
@@ -17,36 +35,26 @@ export default function BarcodeScanner({ onScan, onClose }) {
   const activeRef = useRef(true);
 
   const [phase, setPhase] = useState("starting"); // starting | scanning | detected | error
-  const [errorKind, setErrorKind] = useState(null); // notSupported | camera
   const [detected, setDetected] = useState(null);
 
-  // ── camera + detector setup ──────────────────────────────────────────────
+  // ── setup: detector + camera ─────────────────────────────────────────────
 
   useEffect(() => {
     activeRef.current = true;
 
     async function start() {
-      if (!("BarcodeDetector" in window)) {
-        setPhase("error");
-        setErrorKind("notSupported");
-        return;
-      }
-
       try {
-        detectorRef.current = new window.BarcodeDetector({ formats: FORMATS });
+        detectorRef.current = await buildDetector();
       } catch {
-        // Some implementations don't accept all formats
-        detectorRef.current = new window.BarcodeDetector();
+        if (activeRef.current) setPhase("error");
+        return;
       }
 
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 } },
         });
-        if (!activeRef.current) {
-          stream.getTracks().forEach((t) => t.stop());
-          return;
-        }
+        if (!activeRef.current) { stream.getTracks().forEach((t) => t.stop()); return; }
         streamRef.current = stream;
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -54,9 +62,7 @@ export default function BarcodeScanner({ onScan, onClose }) {
         }
         setPhase("scanning");
       } catch {
-        if (!activeRef.current) return;
-        setPhase("error");
-        setErrorKind("camera");
+        if (activeRef.current) setPhase("error");
       }
     }
 
@@ -69,11 +75,10 @@ export default function BarcodeScanner({ onScan, onClose }) {
     };
   }, []);
 
-  // ── scan loop — runs whenever phase === "scanning" ────────────────────────
+  // ── scan loop ────────────────────────────────────────────────────────────
 
   useEffect(() => {
     if (phase !== "scanning") return;
-
     let loopActive = true;
 
     async function scan() {
@@ -90,46 +95,51 @@ export default function BarcodeScanner({ onScan, onClose }) {
           return;
         }
       } catch {
-        // Frame not ready yet — keep trying
+        // frame not ready — keep looping
       }
       rafRef.current = requestAnimationFrame(scan);
     }
 
     scan();
-
     return () => {
       loopActive = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [phase]);
 
-  // ── backdrop click closes ────────────────────────────────────────────────
+  // ── error state — shown as a proper dialog ───────────────────────────────
 
-  const handleBackdrop = (e) => {
-    if (e.target === e.currentTarget) onClose();
-  };
+  if (phase === "error") {
+    return (
+      <Dialog open onClose={onClose} size="small">
+        <div className="dialog__form">
+          <header className="dialog__head">
+            <h2 className="dialog__title">{t("scanBarcode")}</h2>
+            <button type="button" className="dialog__close" onClick={onClose} aria-label="Close">
+              ×
+            </button>
+          </header>
+          <div className="dialog__body">
+            <p className="confirm__text">{t("scannerCameraError")}</p>
+          </div>
+          <footer className="dialog__foot">
+            <div className="dialog__foot-end" style={{ marginLeft: "auto" }}>
+              <button type="button" className="btn btn--primary" onClick={onClose}>
+                {t("btnClose")}
+              </button>
+            </div>
+          </footer>
+        </div>
+      </Dialog>
+    );
+  }
 
-  // ── render ───────────────────────────────────────────────────────────────
+  // ── camera overlay ───────────────────────────────────────────────────────
 
   return (
-    <div className="scanner-overlay" onClick={handleBackdrop}>
+    <div className="scanner-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
 
-      {/* Error states */}
-      {phase === "error" && (
-        <div className="scanner__card">
-          <p className="scanner__card-text">
-            {errorKind === "notSupported"
-              ? t("scannerNotSupported")
-              : t("scannerCameraError")}
-          </p>
-          <button className="btn btn--ghost" onClick={onClose}>
-            {t("btnClose")}
-          </button>
-        </div>
-      )}
-
-      {/* Detected */}
-      {phase === "detected" && (
+      {phase === "detected" ? (
         <div className="scanner__card">
           <p className="scanner__card-label">{t("scannerDetected")}</p>
           <p className="scanner__result-value">{detected}</p>
@@ -142,10 +152,7 @@ export default function BarcodeScanner({ onScan, onClose }) {
             </button>
           </div>
         </div>
-      )}
-
-      {/* Camera view */}
-      {(phase === "starting" || phase === "scanning") && (
+      ) : (
         <>
           <div className="scanner__frame">
             <video

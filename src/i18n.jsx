@@ -92,8 +92,6 @@ const en = {
   scannerDetected: "Barcode detected",
   scannerRescan: "Scan again",
   scannerUse: "Use",
-  scannerNotSupported:
-    "Barcode scanning is not supported in this browser. Please type the code manually.",
   scannerCameraError:
     "Could not access the camera. Please check your permissions.",
   // confirm dialog
@@ -198,8 +196,6 @@ const sk = {
   scannerDetected: "Čiarový kód naskenovaný",
   scannerRescan: "Skenovať znova",
   scannerUse: "Použiť",
-  scannerNotSupported:
-    "Skenovanie čiarových kódov nie je v tomto prehliadači podporované. Zadajte kód ručne.",
   scannerCameraError:
     "Nepodarilo sa získať prístup ku kamere. Skontrolujte povolenia.",
   // confirm dialog
