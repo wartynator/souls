@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- White rounded plate -->
+  <rect width="512" height="512" rx="96" fill="#ffffff"/>
+  <!-- Thin border for definition -->
+  <rect x="1" y="1" width="510" height="510" rx="95" fill="none" stroke="#ececec" stroke-width="2"/>
+
+  <!-- A simple line-art open book -->
+  <g fill="none" stroke="#111111" stroke-width="12" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Book outline -->
+    <path d="M 128 144 L 128 384 L 256 360 L 384 384 L 384 144 L 256 168 Z"/>
+    <!-- Spine / center fold -->
+    <line x1="256" y1="168" x2="256" y2="360"/>
+    <!-- Left-page lines -->
+    <line x1="168" y1="212" x2="224" y2="205"/>
+    <line x1="168" y1="248" x2="224" y2="241"/>
+    <line x1="168" y1="284" x2="224" y2="277"/>
+    <!-- Right-page lines -->
+    <line x1="288" y1="205" x2="344" y2="212"/>
+    <line x1="288" y1="241" x2="344" y2="248"/>
+    <line x1="288" y1="277" x2="344" y2="284"/>
+  </g>
+</svg>

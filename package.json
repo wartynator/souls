@@ -1,0 +1,26 @@
+{
+  "name": "souls",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "A minimalistic address book for contacts and their devices.",
+  "scripts": {
+    "dev": "vite",
+    "dev:convex": "convex dev",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@auth/core": "0.37.0",
+    "@convex-dev/auth": "^0.0.87",
+    "convex": "^1.17.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "vite": "^5.4.11"
+  }
+}
