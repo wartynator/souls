@@ -95,6 +95,14 @@ const en = {
   scannerUse: "Use",
   scannerCameraError:
     "Could not access the camera. Please check your permissions.",
+  // import
+  importContacts: "Import CSV",
+  importDialogTitle: "Import contacts",
+  importPreviewCount: "{n} contacts found",
+  importBtn: "Import {n}",
+  importSuccess: "Imported {n} contacts",
+  importNoContacts: "No contacts found in this file. Make sure it is a Google Contacts CSV export.",
+  importInvalidFile: "Could not read the file. Please export as CSV from Google Contacts.",
   // confirm dialog
   confirmDelete: "Delete",
   confirmCannotUndo: "This cannot be undone.",
@@ -200,6 +208,14 @@ const sk = {
   searchByBarcode: "Vyhľadať podľa čiarového kódu",
   scannerCameraError:
     "Nepodarilo sa získať prístup ku kamere. Skontrolujte povolenia.",
+  // import
+  importContacts: "Importovať CSV",
+  importDialogTitle: "Importovať kontakty",
+  importPreviewCount: "Nájdených {n} kontaktov",
+  importBtn: "Importovať {n}",
+  importSuccess: "Importovaných {n} kontaktov",
+  importNoContacts: "V súbore sa nenašli žiadne kontakty. Uistite sa, že ide o export z Google Kontaktov vo formáte CSV.",
+  importInvalidFile: "Súbor sa nepodarilo načítať. Exportujte kontakty ako CSV z Google Kontaktov.",
   // confirm dialog
   confirmDelete: "Vymazať",
   confirmCannotUndo: "Toto nie je možné vrátiť späť.",

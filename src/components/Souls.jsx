@@ -9,6 +9,7 @@ import ContactDetail from "./ContactDetail.jsx";
 import DeviceForm from "./DeviceForm.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 import BarcodeScanner from "./BarcodeScanner.jsx";
+import ContactImport from "./ContactImport.jsx";
 import { useToast } from "./Toast.jsx";
 import { useLocale } from "../i18n.jsx";
 
@@ -213,6 +214,7 @@ export default function Souls() {
             </button>
           )}
         </div>
+        {tab === "contacts" && <ContactImport />}
         <button className="btn btn--primary" onClick={handleAdd}>
           <span aria-hidden="true">+</span>
           <span>{tab === "contacts" ? t("addContact") : t("addDevice")}</span>

@@ -111,6 +111,33 @@ export const update = mutation({
   },
 });
 
+export const bulkCreate = mutation({
+  args: {
+    contacts: v.array(
+      v.object({
+        name: v.string(),
+        phone: v.optional(v.string()),
+        email: v.optional(v.string()),
+        notes: v.optional(v.string()),
+      }),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireUser(ctx);
+    await Promise.all(
+      args.contacts.map((c) =>
+        ctx.db.insert("contacts", {
+          userId,
+          name: c.name.trim(),
+          phone: c.phone?.trim() || undefined,
+          email: c.email?.trim() || undefined,
+          notes: c.notes?.trim() || undefined,
+        }),
+      ),
+    );
+  },
+});
+
 export const remove = mutation({
   args: { id: v.id("contacts") },
   handler: async (ctx, args) => {
