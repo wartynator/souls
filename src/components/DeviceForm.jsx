@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import Dialog from "./Dialog.jsx";
@@ -34,30 +34,107 @@ export default function DeviceForm({
 
   const [name, setName] = useState("");
   const [ownerId, setOwnerId] = useState("");
+  const [ownerSearch, setOwnerSearch] = useState("");
+  const [ownerOpen, setOwnerOpen] = useState(false);
+  const [ownerHighlight, setOwnerHighlight] = useState(0);
   const [notes, setNotes] = useState("");
   const [barcode, setBarcode] = useState("");
   const [scannerOpen, setScannerOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const sortedContacts = [...contacts].sort((a, b) =>
-    (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }),
+  const sortedContacts = useMemo(
+    () =>
+      [...contacts].sort((a, b) =>
+        (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }),
+      ),
+    [contacts],
   );
+
+  const ownerOptions = useMemo(() => {
+    const q = ownerSearch.trim().toLowerCase();
+    if (!q) return sortedContacts;
+    return sortedContacts.filter((c) =>
+      (c.name || "").toLowerCase().includes(q),
+    );
+  }, [sortedContacts, ownerSearch]);
 
   useEffect(() => {
     if (!open) return;
     if (editing) {
       setName(editing.name || "");
       setOwnerId(editing.contactId);
+      const ownerContact = contacts.find((c) => c._id === editing.contactId);
+      setOwnerSearch(ownerContact?.name || "");
       setNotes(editing.notes || "");
       setBarcode(editing.barcode || "");
     } else {
       setName("");
-      setOwnerId(presetOwnerId || sortedContacts[0]?._id || "");
+      const presetContact = presetOwnerId
+        ? contacts.find((c) => c._id === presetOwnerId)
+        : sortedContacts[0];
+      setOwnerId(presetContact?._id || "");
+      setOwnerSearch(presetContact?.name || "");
       setNotes("");
       setBarcode("");
     }
+    setOwnerOpen(false);
+    setOwnerHighlight(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, deviceId, presetOwnerId]);
+
+  const selectOwner = (contact) => {
+    setOwnerId(contact._id);
+    setOwnerSearch(contact.name || "");
+    setOwnerOpen(false);
+    setOwnerHighlight(0);
+  };
+
+  const handleOwnerKeyDown = (e) => {
+    if (!ownerOpen) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        setOwnerOpen(true);
+        setOwnerHighlight(0);
+        e.preventDefault();
+      }
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      setOwnerHighlight((h) => Math.min(h + 1, ownerOptions.length - 1));
+      e.preventDefault();
+    } else if (e.key === "ArrowUp") {
+      setOwnerHighlight((h) => Math.max(h - 1, 0));
+      e.preventDefault();
+    } else if (e.key === "Enter") {
+      if (ownerOptions[ownerHighlight]) {
+        selectOwner(ownerOptions[ownerHighlight]);
+      }
+      e.preventDefault();
+    } else if (e.key === "Escape") {
+      setOwnerOpen(false);
+      const prev = contacts.find((c) => c._id === ownerId);
+      setOwnerSearch(prev?.name || "");
+    }
+  };
+
+  const handleOwnerBlur = () => {
+    setTimeout(() => {
+      setOwnerOpen(false);
+      if (ownerId) {
+        const selected = contacts.find((c) => c._id === ownerId);
+        setOwnerSearch(selected?.name || "");
+      } else if (ownerSearch.trim()) {
+        const match = sortedContacts.find(
+          (c) => (c.name || "").toLowerCase() === ownerSearch.trim().toLowerCase(),
+        );
+        if (match) {
+          setOwnerId(match._id);
+          setOwnerSearch(match.name || "");
+        } else {
+          setOwnerSearch("");
+        }
+      }
+    }, 150);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -144,18 +221,42 @@ export default function DeviceForm({
           </label>
           <label className="field">
             <span className="field__label">{t("fieldOwner")}</span>
-            <select
-              className="field__input"
-              required
-              value={ownerId}
-              onChange={(e) => setOwnerId(e.target.value)}
-            >
-              {sortedContacts.map((c) => (
-                <option key={c._id} value={c._id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+            <div className="combobox">
+              <input
+                className="field__input"
+                type="text"
+                value={ownerSearch}
+                onChange={(e) => {
+                  setOwnerSearch(e.target.value);
+                  setOwnerId("");
+                  setOwnerOpen(true);
+                  setOwnerHighlight(0);
+                }}
+                onFocus={() => { setOwnerOpen(true); setOwnerHighlight(0); }}
+                onBlur={handleOwnerBlur}
+                onKeyDown={handleOwnerKeyDown}
+                placeholder={t("fieldOwnerSearch")}
+                autoComplete="off"
+              />
+              {ownerOpen && ownerOptions.length > 0 && (
+                <ul className="combobox__list" role="listbox">
+                  {ownerOptions.map((c, i) => (
+                    <li
+                      key={c._id}
+                      role="option"
+                      aria-selected={c._id === ownerId}
+                      className={`combobox__option${i === ownerHighlight ? " is-highlight" : ""}${c._id === ownerId ? " is-selected" : ""}`}
+                      onMouseDown={(e) => { e.preventDefault(); selectOwner(c); }}
+                    >
+                      {c.name || t("contactUnnamed")}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {ownerOpen && ownerOptions.length === 0 && (
+                <div className="combobox__empty">{t("emptyNoMatchesTitle")}</div>
+              )}
+            </div>
           </label>
           <label className="field">
             <span className="field__label">{t("fieldNotes")}</span>

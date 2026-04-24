@@ -165,6 +165,7 @@ export default function Souls() {
 
   return (
     <div className="app">
+      <div className="app__top">
       <header className="header">
         <div className="header__top">
           <h1 className="header__title">Souls</h1>
@@ -216,7 +217,6 @@ export default function Souls() {
           onClose={() => setSearchScannerOpen(false)}
         />
       )}
-
       <div className="toolbar">
         <div className="search">
           <svg className="search__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -255,6 +255,7 @@ export default function Souls() {
           <span>{tab === "contacts" ? t("addContact") : tab === "devices" ? t("addDevice") : t("addAction")}</span>
         </button>
       </div>
+      </div>{/* end app__top */}
 
       <main className="main">
         {tab === "contacts" && <ContactList contacts={contacts} query={query} onOpen={openContact} />}
