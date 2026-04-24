@@ -4,9 +4,11 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "../../convex/_generated/api";
 import ContactList from "./ContactList.jsx";
 import DeviceList from "./DeviceList.jsx";
+import ActionList from "./ActionList.jsx";
 import ContactForm from "./ContactForm.jsx";
 import ContactDetail from "./ContactDetail.jsx";
 import DeviceForm from "./DeviceForm.jsx";
+import ActionForm from "./ActionForm.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 import BarcodeScanner from "./BarcodeScanner.jsx";
 import ContactImport from "./ContactImport.jsx";
@@ -20,12 +22,14 @@ export default function Souls() {
 
   const contacts = useQuery(api.contacts.list) ?? [];
   const devices = useQuery(api.devices.list) ?? [];
+  const actions = useQuery(api.actions.list) ?? [];
   const currentUser = useQuery(api.users.currentUser);
 
   const deleteContact = useMutation(api.contacts.remove);
   const deleteDevice = useMutation(api.devices.remove);
+  const deleteAction = useMutation(api.actions.remove);
 
-  const [tab, setTab] = useState("contacts"); // "contacts" | "devices"
+  const [tab, setTab] = useState("contacts"); // "contacts" | "devices" | "actions"
   const [query, setQuery] = useState("");
   const [searchScannerOpen, setSearchScannerOpen] = useState(false);
 
@@ -40,6 +44,10 @@ export default function Souls() {
   const [deviceFormId, setDeviceFormId] = useState(null);
   const [deviceFormPresetOwner, setDeviceFormPresetOwner] = useState(null);
 
+  const [actionFormOpen, setActionFormOpen] = useState(false);
+  const [actionFormId, setActionFormId] = useState(null);
+  const [actionFormPresetDevice, setActionFormPresetDevice] = useState(null);
+
   const [confirm, setConfirm] = useState(null); // { kind, id, title, text }
 
   /* ---------- handlers ---------- */
@@ -53,7 +61,7 @@ export default function Souls() {
     if (tab === "contacts") {
       setContactFormId(null);
       setContactFormOpen(true);
-    } else {
+    } else if (tab === "devices") {
       if (contacts.length === 0) {
         toast.show(t("toastAddContactFirst"));
         setTab("contacts");
@@ -62,6 +70,15 @@ export default function Souls() {
       setDeviceFormId(null);
       setDeviceFormPresetOwner(null);
       setDeviceFormOpen(true);
+    } else {
+      if (devices.length === 0) {
+        toast.show(t("toastAddDeviceFirst"));
+        setTab("devices");
+        return;
+      }
+      setActionFormId(null);
+      setActionFormPresetDevice(null);
+      setActionFormOpen(true);
     }
   };
 
@@ -113,6 +130,17 @@ export default function Souls() {
     });
   };
 
+  const deleteActionFromForm = () => {
+    const a = actions.find((x) => x._id === actionFormId);
+    if (!a) return;
+    setConfirm({
+      kind: "action",
+      id: a._id,
+      title: t("confirmDeleteItem", { name: a.name }),
+      text: t("confirmCannotUndo"),
+    });
+  };
+
   const performConfirm = async () => {
     if (!confirm) return;
     try {
@@ -121,10 +149,14 @@ export default function Souls() {
         setDetailOpen(false);
         setContactFormOpen(false);
         toast.show(t("toastContactDeleted"));
-      } else {
+      } else if (confirm.kind === "device") {
         await deleteDevice({ id: confirm.id });
         setDeviceFormOpen(false);
         toast.show(t("toastDeviceDeleted"));
+      } else {
+        await deleteAction({ id: confirm.id });
+        setActionFormOpen(false);
+        toast.show(t("toastActionDeleted"));
       }
     } catch (err) {
       console.error(err);
@@ -172,6 +204,13 @@ export default function Souls() {
           >
             {t("tabDevices")} <span className="tab__count">{devices.length}</span>
           </button>
+          <button
+            className={`tab${tab === "actions" ? " is-active" : ""}`}
+            onClick={() => handleTab("actions")}
+            role="tab"
+          >
+            {t("tabActions")} <span className="tab__count">{actions.length}</span>
+          </button>
         </nav>
       </header>
 
@@ -191,11 +230,11 @@ export default function Souls() {
           <input
             className="search__input"
             type="search"
-            placeholder={tab === "contacts" ? t("searchContacts") : t("searchDevices")}
+            placeholder={tab === "contacts" ? t("searchContacts") : tab === "devices" ? t("searchDevices") : t("searchActions")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-          {tab === "devices" && (
+          {tab === "devices" && devices.length > 0 && (
             <button
               type="button"
               className="search__action"
@@ -217,15 +256,19 @@ export default function Souls() {
         {tab === "contacts" && <ContactImport />}
         <button className="btn btn--primary" onClick={handleAdd}>
           <span aria-hidden="true">+</span>
-          <span>{tab === "contacts" ? t("addContact") : t("addDevice")}</span>
+          <span>{tab === "contacts" ? t("addContact") : tab === "devices" ? t("addDevice") : t("addAction")}</span>
         </button>
       </div>
 
       <main className="main">
-        {tab === "contacts" ? (
-          <ContactList contacts={contacts} query={query} onOpen={openContact} />
-        ) : (
-          <DeviceList devices={devices} query={query} onOpen={editDevice} />
+        {tab === "contacts" && <ContactList contacts={contacts} query={query} onOpen={openContact} />}
+        {tab === "devices" && <DeviceList devices={devices} query={query} onOpen={editDevice} />}
+        {tab === "actions" && (
+          <ActionList
+            actions={actions}
+            query={query}
+            onOpen={(id) => { setActionFormId(id); setActionFormPresetDevice(null); setActionFormOpen(true); }}
+          />
         )}
       </main>
 
@@ -272,6 +315,15 @@ export default function Souls() {
         contacts={contacts}
         onClose={() => setDeviceFormOpen(false)}
         onDelete={deleteDeviceFromForm}
+      />
+
+      <ActionForm
+        open={actionFormOpen}
+        actionId={actionFormId}
+        presetDeviceId={actionFormPresetDevice}
+        devices={devices}
+        onClose={() => setActionFormOpen(false)}
+        onDelete={deleteActionFromForm}
       />
 
       <ConfirmDialog
