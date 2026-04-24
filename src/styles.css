@@ -770,6 +770,10 @@ select.field__input {
   from { opacity: 0; transform: translateY(6px) scale(.98); }
   to   { opacity: 1; transform: translateY(0)   scale(1); }
 }
+@keyframes sheetIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* ---------- Settings panel ---------- */
 .settings-overlay {
@@ -977,11 +981,40 @@ select.field__input {
   .toast { bottom: 76px; }
 
   .field-row { grid-template-columns: 1fr; }
-  .dialog__body { padding: 16px 20px; }
-  .dialog__head { padding: 18px 20px 14px; }
-  .dialog__title { font-size: 22px; }
   .detail__row { grid-template-columns: 56px 1fr; }
   .auth__title { font-size: 40px; }
+
+  /* ── Bottom-sheet dialogs ── */
+  .dialog {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    width: 100%;
+    max-width: 100%;
+    max-height: 92dvh;
+    border-radius: 16px 16px 0 0;
+    margin: 0;
+  }
+  .dialog--small { max-height: 62dvh; }
+  /* Drag-handle pill */
+  .dialog::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--rule-2);
+    border-radius: 2px;
+    margin: 10px auto 2px;
+  }
+  .dialog__form { max-height: 92dvh; border-radius: 16px 16px 0 0; }
+  .dialog--small .dialog__form { max-height: 62dvh; }
+  .dialog__body { padding: 16px 20px; }
+  .dialog__head { padding: 14px 20px 12px; }
+  .dialog__title { font-size: 22px; }
+  /* Slide-up instead of fade+scale */
+  .dialog[open] { animation: sheetIn .25s ease; }
 }
 
 /* ---------- Service history (inside DeviceForm) ---------- */
