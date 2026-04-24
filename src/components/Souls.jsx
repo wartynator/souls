@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "../../convex/_generated/api";
@@ -14,6 +14,7 @@ import WorklistForm from "./WorklistForm.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 import BarcodeScanner from "./BarcodeScanner.jsx";
 import ContactImport from "./ContactImport.jsx";
+import SettingsPanel from "./SettingsPanel.jsx";
 import { useToast } from "./Toast.jsx";
 import { useLocale } from "../i18n.jsx";
 
@@ -58,6 +59,19 @@ export default function Souls() {
   const [worklistFormPresetDevice, setWorklistFormPresetDevice] = useState(null);
 
   const [confirm, setConfirm] = useState(null); // { kind, id, title, text }
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    try {
+      const saved = localStorage.getItem("souls-theme");
+      if (saved) return saved === "dark";
+      return window.matchMedia("(prefers-color-scheme: dark)").matches;
+    } catch { return false; }
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", darkMode ? "dark" : "light");
+    localStorage.setItem("souls-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
 
   /* ---------- handlers ---------- */
 
@@ -212,6 +226,26 @@ export default function Souls() {
 
   /* ---------- render ---------- */
 
+  const darkModeButton = (
+    <button
+      className="btn btn--text btn--small"
+      onClick={() => setDarkMode(d => !d)}
+      aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+      title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {darkMode ? (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      )}
+    </button>
+  );
+
   const langButton = (
     <button
       className="btn btn--text btn--small"
@@ -294,6 +328,7 @@ export default function Souls() {
             <span className="sidebar__email">{currentUser.email}</span>
           )}
           <div className="sidebar__controls">
+            {darkModeButton}
             {langButton}
             {signOutButton}
           </div>
@@ -305,10 +340,16 @@ export default function Souls() {
         {/* Mobile-only compact header */}
         <div className="topbar">
           <span className="topbar__title">Souls</span>
-          <div className="topbar__user">
-            {langButton}
-            {signOutButton}
-          </div>
+          <button
+            className="topbar__settings-btn"
+            onClick={() => setSettingsOpen(true)}
+            aria-label="Settings"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M4 20c0-3.5 3.13-6 8-6s8 2.5 8 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
         </div>
 
         {searchScannerOpen && (
@@ -464,6 +505,15 @@ export default function Souls() {
         text={confirm?.text}
         onConfirm={performConfirm}
         onCancel={() => setConfirm(null)}
+      />
+
+      <SettingsPanel
+        open={settingsOpen}
+        email={currentUser?.email}
+        darkMode={darkMode}
+        onToggleDark={() => setDarkMode(d => !d)}
+        onSignOut={() => { signOut(); setSettingsOpen(false); }}
+        onClose={() => setSettingsOpen(false)}
       />
     </div>
   );

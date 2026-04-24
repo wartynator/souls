@@ -19,6 +19,9 @@ const en = {
   authErrorSignIn: "Invalid email or password",
   // header / nav
   headerSignOut: "Sign out",
+  settingsTitle: "Settings",
+  settingsDarkMode: "Dark mode",
+  settingsLanguage: "Language",
   tabContacts: "Contacts",
   tabDevices: "Devices",
   tabActions: "Actions",
@@ -189,6 +192,9 @@ const sk = {
   authErrorSignIn: "Neplatný email alebo heslo",
   // header / nav
   headerSignOut: "Odhlásiť sa",
+  settingsTitle: "Nastavenia",
+  settingsDarkMode: "Tmavý režim",
+  settingsLanguage: "Jazyk",
   tabContacts: "Kontakty",
   tabDevices: "Zariadenia",
   tabActions: "Akcie",
