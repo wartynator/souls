@@ -19,6 +19,7 @@ export default function WorklistForm({
   worklist,
   contacts,
   devices,
+  actions,
   presetContactId,
   presetDeviceId,
   onClose,
@@ -36,8 +37,8 @@ export default function WorklistForm({
   const [contactOpen, setContactOpen] = useState(false);
   const [contactHighlight, setContactHighlight] = useState(0);
   const [deviceId, setDeviceId] = useState("");
+  const [actionId, setActionId] = useState("");
   const [date, setDate] = useState(todayISO());
-  const [actionType, setActionType] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -73,8 +74,8 @@ export default function WorklistForm({
       setContactId(editing.contactId);
       setContactSearch(ownerContact ? contactFullName(ownerContact) : "");
       setDeviceId(editing.deviceId);
+      setActionId(editing.actionId);
       setDate(editing.date);
-      setActionType(editing.actionType);
       setNotes(editing.notes || "");
     } else {
       const presetContact = presetContactId
@@ -83,8 +84,8 @@ export default function WorklistForm({
       setContactId(presetContact?._id || "");
       setContactSearch(presetContact ? contactFullName(presetContact) : "");
       setDeviceId(presetDeviceId || "");
+      setActionId(actions[0]?._id || "");
       setDate(todayISO());
-      setActionType("");
       setNotes("");
     }
     setContactOpen(false);
@@ -92,7 +93,7 @@ export default function WorklistForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, entryId, presetContactId, presetDeviceId]);
 
-  // reset device when contact changes (but not when a preset device was just applied)
+  // reset device when contact changes
   useEffect(() => {
     if (!contactId) { setDeviceId(""); return; }
     const stillValid = contactDevices.some((d) => d._id === deviceId);
@@ -156,27 +157,14 @@ export default function WorklistForm({
     if (submitting) return;
     if (!contactId) { toast.show(t("toastOwnerRequired")); return; }
     if (!deviceId) { toast.show(t("toastDeviceRequired")); return; }
-    if (!actionType.trim()) { toast.show(t("toastActionTypeRequired")); return; }
+    if (!actionId) { toast.show(t("toastActionTypeRequired")); return; }
     setSubmitting(true);
     try {
       if (entryId) {
-        await updateEntry({
-          id: entryId,
-          contactId,
-          deviceId,
-          date,
-          actionType,
-          notes: notes || undefined,
-        });
+        await updateEntry({ id: entryId, contactId, deviceId, actionId, date, notes: notes || undefined });
         toast.show(t("toastWorklistUpdated"));
       } else {
-        await createEntry({
-          contactId,
-          deviceId,
-          date,
-          actionType,
-          notes: notes || undefined,
-        });
+        await createEntry({ contactId, deviceId, actionId, date, notes: notes || undefined });
         toast.show(t("toastWorklistAdded"));
       }
       onClose();
@@ -242,7 +230,7 @@ export default function WorklistForm({
             </div>
           </label>
 
-          {/* Device — only show after a contact is selected */}
+          {/* Device */}
           <label className="field">
             <span className="field__label">{t("worklistFieldDevice")}</span>
             {!contactId ? (
@@ -264,6 +252,26 @@ export default function WorklistForm({
             )}
           </label>
 
+          {/* Action from catalog */}
+          <label className="field">
+            <span className="field__label">{t("worklistFieldActionType")}</span>
+            {actions.length === 0 ? (
+              <p className="field__hint">{t("worklistNoActions")}</p>
+            ) : (
+              <select
+                className="field__input"
+                required
+                value={actionId}
+                onChange={(e) => setActionId(e.target.value)}
+              >
+                <option value="" disabled>{t("worklistPickAction")}</option>
+                {actions.map((a) => (
+                  <option key={a._id} value={a._id}>{a.name}</option>
+                ))}
+              </select>
+            )}
+          </label>
+
           {/* Date */}
           <label className="field">
             <span className="field__label">{t("worklistFieldDate")}</span>
@@ -273,20 +281,6 @@ export default function WorklistForm({
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-            />
-          </label>
-
-          {/* Action type */}
-          <label className="field">
-            <span className="field__label">{t("worklistFieldActionType")}</span>
-            <input
-              className="field__input"
-              type="text"
-              maxLength={200}
-              required
-              value={actionType}
-              onChange={(e) => setActionType(e.target.value)}
-              placeholder={t("worklistFieldActionTypePlaceholder")}
             />
           </label>
 
@@ -315,7 +309,11 @@ export default function WorklistForm({
             <button type="button" className="btn btn--ghost" onClick={onClose}>
               {t("btnCancel")}
             </button>
-            <button type="submit" className="btn btn--primary" disabled={submitting}>
+            <button
+              type="submit"
+              className="btn btn--primary"
+              disabled={submitting || actions.length === 0}
+            >
               {submitting ? t("btnSaving") : t("btnSave")}
             </button>
           </div>

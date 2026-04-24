@@ -177,7 +177,7 @@ export default function Souls() {
     setConfirm({
       kind: "worklist",
       id: e._id,
-      title: t("confirmDeleteItem", { name: e.actionType }),
+      title: t("confirmDeleteItem", { name: e.actionName }),
       text: t("confirmCannotUndo"),
     });
   };
@@ -404,6 +404,7 @@ export default function Souls() {
         worklist={worklist}
         contacts={contacts}
         devices={devices}
+        actions={actions}
         presetContactId={worklistFormPresetContact}
         presetDeviceId={worklistFormPresetDevice}
         onClose={() => setWorklistFormOpen(false)}

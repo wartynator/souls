@@ -9,7 +9,7 @@ export default function WorklistList({ worklist, query, onOpen }) {
     let list = worklist;
     if (q) {
       list = list.filter((e) => {
-        const hay = [e.contactName, e.deviceName, e.actionType, e.notes]
+        const hay = [e.contactName, e.deviceName, e.actionName, e.notes]
           .filter(Boolean)
           .join(" ")
           .toLowerCase();
@@ -53,7 +53,7 @@ export default function WorklistList({ worklist, query, onOpen }) {
             </svg>
           </div>
           <div className="row__main">
-            <p className="row__name">{e.actionType}</p>
+            <p className="row__name">{e.actionName}</p>
             <p className="row__sub">
               {e.contactName || t("contactUnnamed")}
               {e.deviceName && ` · ${e.deviceName}`}

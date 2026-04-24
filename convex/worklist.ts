@@ -39,6 +39,7 @@ export const list = query({
       entries.map(async (e) => {
         const contact = await ctx.db.get(e.contactId);
         const device = await ctx.db.get(e.deviceId);
+        const action = await ctx.db.get(e.actionId);
         const contactName = contact
           ? [contact.name, contact.surname].filter(Boolean).join(" ")
           : null;
@@ -46,6 +47,7 @@ export const list = query({
           ...e,
           contactName,
           deviceName: device?.name ?? null,
+          actionName: action?.name ?? null,
         };
       }),
     );
@@ -58,8 +60,8 @@ export const create = mutation({
   args: {
     contactId: v.id("contacts"),
     deviceId: v.id("devices"),
+    actionId: v.id("actions"),
     date: v.string(),
-    actionType: v.string(),
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -69,16 +71,15 @@ export const create = mutation({
     if (!contact || contact.userId !== userId) throw new Error("Contact not found");
     const device = await ctx.db.get(args.deviceId);
     if (!device || device.userId !== userId) throw new Error("Device not found");
-
-    const actionType = args.actionType.trim();
-    if (!actionType) throw new Error("Action type is required");
+    const action = await ctx.db.get(args.actionId);
+    if (!action || action.userId !== userId) throw new Error("Action not found");
 
     return ctx.db.insert("worklist", {
       userId,
       contactId: args.contactId,
       deviceId: args.deviceId,
+      actionId: args.actionId,
       date: args.date,
-      actionType,
       notes: args.notes?.trim() || undefined,
     });
   },
@@ -89,8 +90,8 @@ export const update = mutation({
     id: v.id("worklist"),
     contactId: v.id("contacts"),
     deviceId: v.id("devices"),
+    actionId: v.id("actions"),
     date: v.string(),
-    actionType: v.string(),
     notes: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -101,15 +102,14 @@ export const update = mutation({
     if (!contact || contact.userId !== userId) throw new Error("Contact not found");
     const device = await ctx.db.get(args.deviceId);
     if (!device || device.userId !== userId) throw new Error("Device not found");
-
-    const actionType = args.actionType.trim();
-    if (!actionType) throw new Error("Action type is required");
+    const action = await ctx.db.get(args.actionId);
+    if (!action || action.userId !== userId) throw new Error("Action not found");
 
     await ctx.db.patch(args.id, {
       contactId: args.contactId,
       deviceId: args.deviceId,
+      actionId: args.actionId,
       date: args.date,
-      actionType,
       notes: args.notes?.trim() || undefined,
     });
   },

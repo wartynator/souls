@@ -51,7 +51,7 @@ export default defineSchema({
     contactId: v.id("contacts"),
     deviceId: v.id("devices"),
     date: v.string(), // ISO date "YYYY-MM-DD"
-    actionType: v.string(),
+    actionId: v.id("actions"),
     notes: v.optional(v.string()),
   })
     .index("by_user", ["userId"])
