@@ -39,7 +39,7 @@ export default defineSchema({
 
   actions: defineTable({
     userId: v.id("users"),
-    deviceId: v.id("devices"),
+    deviceId: v.optional(v.id("devices")),
     name: v.string(),
     price: v.optional(v.number()),
     notes: v.optional(v.string()),
