@@ -71,11 +71,6 @@ export default function Souls() {
       setDeviceFormPresetOwner(null);
       setDeviceFormOpen(true);
     } else {
-      if (devices.length === 0) {
-        toast.show(t("toastAddDeviceFirst"));
-        setTab("devices");
-        return;
-      }
       setActionFormId(null);
       setActionFormPresetDevice(null);
       setActionFormOpen(true);

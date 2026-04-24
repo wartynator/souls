@@ -28,7 +28,7 @@ export default function ActionForm({
   const createAction = useMutation(api.actions.create);
   const updateAction = useMutation(api.actions.update);
 
-  const [deviceId, setDeviceId] = useState("");
+  const [deviceId, setDeviceId] = useState(""); // "" means no device
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [notes, setNotes] = useState("");
@@ -50,7 +50,7 @@ export default function ActionForm({
       setNotes(editingAction.notes ?? "");
       setDate(editingAction.date);
     } else {
-      setDeviceId(presetDeviceId ?? (devices[0]?._id ?? ""));
+      setDeviceId(presetDeviceId ?? "");
       setName("");
       setPrice("");
       setNotes("");
@@ -63,18 +63,19 @@ export default function ActionForm({
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim()) { toast.show(t("toastActionNameRequired")); return; }
-    if (!deviceId) { toast.show(t("toastOwnerRequired")); return; }
 
     const parsedPrice = price.trim() ? parseFloat(price.replace(",", ".")) : undefined;
     if (price.trim() && isNaN(parsedPrice)) { toast.show(t("toastInvalidPrice")); return; }
 
+    const resolvedDeviceId = deviceId || undefined;
+
     setSaving(true);
     try {
       if (actionId) {
-        await updateAction({ id: actionId, deviceId, name: name.trim(), price: parsedPrice, notes: notes.trim() || undefined, date });
+        await updateAction({ id: actionId, deviceId: resolvedDeviceId, name: name.trim(), price: parsedPrice, notes: notes.trim() || undefined, date });
         toast.show(t("toastActionUpdated"));
       } else {
-        await createAction({ deviceId, name: name.trim(), price: parsedPrice, notes: notes.trim() || undefined, date });
+        await createAction({ deviceId: resolvedDeviceId, name: name.trim(), price: parsedPrice, notes: notes.trim() || undefined, date });
         toast.show(t("toastActionAdded"));
       }
       onClose();
@@ -102,8 +103,8 @@ export default function ActionForm({
               className="field__input"
               value={deviceId}
               onChange={(e) => setDeviceId(e.target.value)}
-              required
             >
+              <option value="">{t("fieldActionDeviceNone")}</option>
               {devices.map((d) => (
                 <option key={d._id} value={d._id}>{d.name}</option>
               ))}

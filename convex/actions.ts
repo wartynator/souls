@@ -56,7 +56,7 @@ export const listByDevice = query({
 
 export const create = mutation({
   args: {
-    deviceId: v.id("devices"),
+    deviceId: v.optional(v.id("devices")),
     name: v.string(),
     price: v.optional(v.number()),
     notes: v.optional(v.string()),
@@ -64,12 +64,13 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
-    const device = await ctx.db.get(args.deviceId);
-    if (!device || device.userId !== userId) throw new Error("Device not found");
-
+    if (args.deviceId) {
+      const device = await ctx.db.get(args.deviceId);
+      if (!device || device.userId !== userId) throw new Error("Device not found");
+    }
     return ctx.db.insert("actions", {
       userId,
-      deviceId: args.deviceId,
+      deviceId: args.deviceId ?? undefined,
       name: args.name.trim(),
       price: args.price ?? undefined,
       notes: args.notes?.trim() || undefined,
@@ -81,7 +82,7 @@ export const create = mutation({
 export const update = mutation({
   args: {
     id: v.id("actions"),
-    deviceId: v.id("devices"),
+    deviceId: v.optional(v.id("devices")),
     name: v.string(),
     price: v.optional(v.number()),
     notes: v.optional(v.string()),
@@ -92,7 +93,7 @@ export const update = mutation({
     await ownedAction(ctx, userId, args.id);
 
     await ctx.db.patch(args.id, {
-      deviceId: args.deviceId,
+      deviceId: args.deviceId ?? undefined,
       name: args.name.trim(),
       price: args.price ?? undefined,
       notes: args.notes?.trim() || undefined,
