@@ -212,137 +212,182 @@ export default function Souls() {
 
   /* ---------- render ---------- */
 
+  const langButton = (
+    <button
+      className="btn btn--text btn--small"
+      style={{ fontWeight: locale === "sk" ? 700 : 400 }}
+      onClick={() => setLocale(locale === "en" ? "sk" : "en")}
+      aria-label="Toggle language"
+    >
+      {locale === "en" ? "SK" : "EN"}
+    </button>
+  );
+
+  const signOutButton = (
+    <button className="btn btn--text btn--small" onClick={() => signOut()}>
+      {t("headerSignOut")}
+    </button>
+  );
+
   return (
     <div className="app">
-      <div className="app__top">
-      <header className="header">
-        <div className="header__top">
-          <h1 className="header__title">Souls</h1>
-          <div className="header__user">
-            {currentUser?.email && (
-              <span className="header__email">{currentUser.email}</span>
-            )}
-            <button
-              className={`btn btn--text${locale === "sk" ? " is-active" : ""}`}
-              style={{ fontWeight: locale === "sk" ? 700 : 400 }}
-              onClick={() => setLocale(locale === "en" ? "sk" : "en")}
-              aria-label="Toggle language"
-            >
-              {locale === "en" ? "SK" : "EN"}
-            </button>
-            <button className="btn btn--text" onClick={() => signOut()}>
-              {t("headerSignOut")}
-            </button>
-          </div>
-        </div>
-        <nav className="tabs" role="tablist">
+      {/* ── Sidebar (desktop left) / Bottom bar (mobile) ── */}
+      <aside className="sidebar">
+        <div className="sidebar__brand">Souls</div>
+
+        <nav className="sidebar__nav" role="tablist">
           <button
-            className={`tab${tab === "contacts" ? " is-active" : ""}`}
+            className={`sidebar__item${tab === "contacts" ? " is-active" : ""}`}
             onClick={() => handleTab("contacts")}
             role="tab"
           >
-            {t("tabContacts")} <span className="tab__count">{contacts.length}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M4 20c0-4 3.58-7 8-7s8 3 8 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <span className="sidebar__label">{t("tabContacts")}</span>
+            <span className="sidebar__count">{contacts.length}</span>
           </button>
+
           <button
-            className={`tab${tab === "devices" ? " is-active" : ""}`}
+            className={`sidebar__item${tab === "devices" ? " is-active" : ""}`}
             onClick={() => handleTab("devices")}
             role="tab"
           >
-            {t("tabDevices")} <span className="tab__count">{devices.length}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="13" rx="2" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M8 20h8M12 17v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <span className="sidebar__label">{t("tabDevices")}</span>
+            <span className="sidebar__count">{devices.length}</span>
           </button>
+
           <button
-            className={`tab${tab === "actions" ? " is-active" : ""}`}
+            className={`sidebar__item${tab === "actions" ? " is-active" : ""}`}
             onClick={() => handleTab("actions")}
             role="tab"
           >
-            {t("tabActions")} <span className="tab__count">{actions.length}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
+            </svg>
+            <span className="sidebar__label">{t("tabActions")}</span>
+            <span className="sidebar__count">{actions.length}</span>
           </button>
+
           <button
-            className={`tab${tab === "worklist" ? " is-active" : ""}`}
+            className={`sidebar__item${tab === "worklist" ? " is-active" : ""}`}
             onClick={() => handleTab("worklist")}
             role="tab"
           >
-            {t("tabWorklist")} <span className="tab__count">{worklist.length}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <span className="sidebar__label">{t("tabWorklist")}</span>
+            <span className="sidebar__count">{worklist.length}</span>
           </button>
         </nav>
-      </header>
 
-      {searchScannerOpen && (
-        <BarcodeScanner
-          onScan={(value) => { setQuery(value); setSearchScannerOpen(false); }}
-          onClose={() => setSearchScannerOpen(false)}
-        />
-      )}
-      <div className="toolbar">
-        <div className="search">
-          <svg className="search__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" />
-            <path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-          <input
-            className="search__input"
-            type="search"
-            placeholder={
-              tab === "contacts" ? t("searchContacts") :
-              tab === "devices" ? t("searchDevices") :
-              tab === "worklist" ? t("searchWorklist") :
-              t("searchActions")
-            }
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-          {tab === "devices" && devices.length > 0 && (
-            <button
-              type="button"
-              className="search__action"
-              onClick={() => setSearchScannerOpen(true)}
-              title={t("searchByBarcode")}
-              aria-label={t("searchByBarcode")}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <rect x="2" y="4" width="2" height="16" fill="currentColor" />
-                <rect x="6" y="4" width="1" height="16" fill="currentColor" />
-                <rect x="9" y="4" width="2" height="16" fill="currentColor" />
-                <rect x="13" y="4" width="1" height="16" fill="currentColor" />
-                <rect x="16" y="4" width="3" height="16" fill="currentColor" />
-                <rect x="21" y="4" width="1" height="16" fill="currentColor" />
-              </svg>
-            </button>
+        <div className="sidebar__footer">
+          {currentUser?.email && (
+            <span className="sidebar__email">{currentUser.email}</span>
           )}
+          <div className="sidebar__controls">
+            {langButton}
+            {signOutButton}
+          </div>
         </div>
-        {tab === "contacts" && <ContactImport />}
-        <button className="btn btn--primary" onClick={handleAdd}>
-          <span aria-hidden="true">+</span>
-          <span>
-            {tab === "contacts" ? t("addContact") :
-             tab === "devices" ? t("addDevice") :
-             tab === "worklist" ? t("addWorklist") :
-             t("addAction")}
-          </span>
-        </button>
+      </aside>
+
+      {/* ── Content area ── */}
+      <div className="content">
+        {/* Mobile-only compact header */}
+        <div className="topbar">
+          <span className="topbar__title">Souls</span>
+          <div className="topbar__user">
+            {langButton}
+            {signOutButton}
+          </div>
+        </div>
+
+        {searchScannerOpen && (
+          <BarcodeScanner
+            onScan={(value) => { setQuery(value); setSearchScannerOpen(false); }}
+            onClose={() => setSearchScannerOpen(false)}
+          />
+        )}
+
+        <div className="toolbar">
+          <div className="search">
+            <svg className="search__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" />
+              <path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <input
+              className="search__input"
+              type="search"
+              placeholder={
+                tab === "contacts" ? t("searchContacts") :
+                tab === "devices" ? t("searchDevices") :
+                tab === "worklist" ? t("searchWorklist") :
+                t("searchActions")
+              }
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            {tab === "devices" && devices.length > 0 && (
+              <button
+                type="button"
+                className="search__action"
+                onClick={() => setSearchScannerOpen(true)}
+                title={t("searchByBarcode")}
+                aria-label={t("searchByBarcode")}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="2" y="4" width="2" height="16" fill="currentColor" />
+                  <rect x="6" y="4" width="1" height="16" fill="currentColor" />
+                  <rect x="9" y="4" width="2" height="16" fill="currentColor" />
+                  <rect x="13" y="4" width="1" height="16" fill="currentColor" />
+                  <rect x="16" y="4" width="3" height="16" fill="currentColor" />
+                  <rect x="21" y="4" width="1" height="16" fill="currentColor" />
+                </svg>
+              </button>
+            )}
+          </div>
+          {tab === "contacts" && <ContactImport />}
+          <button className="btn btn--primary" onClick={handleAdd}>
+            <span aria-hidden="true">+</span>
+            <span>
+              {tab === "contacts" ? t("addContact") :
+               tab === "devices" ? t("addDevice") :
+               tab === "worklist" ? t("addWorklist") :
+               t("addAction")}
+            </span>
+          </button>
+        </div>
+
+        <main className="main">
+          {tab === "contacts" && <ContactList contacts={contacts} query={query} onOpen={openContact} />}
+          {tab === "devices" && <DeviceList devices={devices} query={query} onOpen={editDevice} />}
+          {tab === "actions" && (
+            <ActionList
+              actions={actions}
+              query={query}
+              onOpen={(id) => { setActionFormId(id); setActionFormPresetDevice(null); setActionFormOpen(true); }}
+            />
+          )}
+          {tab === "worklist" && (
+            <WorklistList
+              worklist={worklist}
+              query={query}
+              onOpen={(id) => { setWorklistFormId(id); setWorklistFormPresetContact(null); setWorklistFormPresetDevice(null); setWorklistFormOpen(true); }}
+            />
+          )}
+        </main>
       </div>
-      </div>{/* end app__top */}
 
-      <main className="main">
-        {tab === "contacts" && <ContactList contacts={contacts} query={query} onOpen={openContact} />}
-        {tab === "devices" && <DeviceList devices={devices} query={query} onOpen={editDevice} />}
-        {tab === "actions" && (
-          <ActionList
-            actions={actions}
-            query={query}
-            onOpen={(id) => { setActionFormId(id); setActionFormPresetDevice(null); setActionFormOpen(true); }}
-          />
-        )}
-        {tab === "worklist" && (
-          <WorklistList
-            worklist={worklist}
-            query={query}
-            onOpen={(id) => { setWorklistFormId(id); setWorklistFormPresetContact(null); setWorklistFormPresetDevice(null); setWorklistFormOpen(true); }}
-          />
-        )}
-      </main>
-
-      {/* Dialogs */}
+      {/* ── Dialogs ── */}
       <ContactForm
         open={contactFormOpen}
         contactId={contactFormId}
