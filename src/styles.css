@@ -675,6 +675,35 @@ select.field__input {
   .auth__title { font-size: 40px; }
 }
 
+/* ---------- Contact import ---------- */
+.import__count {
+  font-size: 13px;
+  color: var(--ink-mute);
+  margin: 0 0 12px;
+}
+.import__list {
+  max-height: 320px;
+  overflow-y: auto;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+}
+.import__row {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--rule);
+}
+.import__row:last-child { border-bottom: none; }
+.import__name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.import__meta {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--ink-mute);
+}
+
 /* ---------- Focus ---------- */
 :focus-visible {
   outline: 2px solid var(--ink);
