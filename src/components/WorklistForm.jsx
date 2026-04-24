@@ -24,6 +24,7 @@ export default function WorklistForm({
   presetDeviceId,
   onClose,
   onDelete,
+  onPrint,
 }) {
   const toast = useToast();
   const { t } = useLocale();
@@ -183,9 +184,26 @@ export default function WorklistForm({
           <h2 className="dialog__title">
             {entryId ? t("worklistFormEdit") : t("worklistFormNew")}
           </h2>
-          <button type="button" className="dialog__close" onClick={onClose} aria-label="Close">
-            ×
-          </button>
+          <div className="dialog__head-actions">
+            {entryId && onPrint && (
+              <button
+                type="button"
+                className="dialog__action-btn"
+                onClick={onPrint}
+                title={t("reportPrint")}
+                aria-label={t("reportPrint")}
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M6 9V2h12v7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <rect x="6" y="14" width="12" height="8" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+              </button>
+            )}
+            <button type="button" className="dialog__close" onClick={onClose} aria-label="Close">
+              ×
+            </button>
+          </div>
         </header>
         <div className="dialog__body">
           {/* Contact */}

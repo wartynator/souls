@@ -15,6 +15,7 @@ import ConfirmDialog from "./ConfirmDialog.jsx";
 import BarcodeScanner from "./BarcodeScanner.jsx";
 import ContactImport from "./ContactImport.jsx";
 import SettingsPanel from "./SettingsPanel.jsx";
+import WorklistReport from "./WorklistReport.jsx";
 import { useToast } from "./Toast.jsx";
 import { useLocale } from "../i18n.jsx";
 
@@ -60,6 +61,7 @@ export default function Souls() {
 
   const [confirm, setConfirm] = useState(null); // { kind, id, title, text }
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [reportEntryId, setReportEntryId] = useState(null);
   const [darkMode, setDarkMode] = useState(() => {
     try {
       const saved = localStorage.getItem("souls-theme");
@@ -497,6 +499,7 @@ export default function Souls() {
         presetDeviceId={worklistFormPresetDevice}
         onClose={() => setWorklistFormOpen(false)}
         onDelete={deleteWorklistFromForm}
+        onPrint={() => setReportEntryId(worklistFormId)}
       />
 
       <ConfirmDialog
@@ -515,6 +518,23 @@ export default function Souls() {
         onSignOut={() => { signOut(); setSettingsOpen(false); }}
         onClose={() => setSettingsOpen(false)}
       />
+
+      {(() => {
+        const entry = reportEntryId ? worklist.find(e => e._id === reportEntryId) : null;
+        const contact = entry ? contacts.find(c => c._id === entry.contactId) : null;
+        const device = entry ? devices.find(d => d._id === entry.deviceId) : null;
+        const action = entry ? actions.find(a => a._id === entry.actionId) : null;
+        return (
+          <WorklistReport
+            open={!!reportEntryId}
+            entry={entry}
+            contact={contact}
+            device={device}
+            action={action}
+            onClose={() => setReportEntryId(null)}
+          />
+        );
+      })()}
     </div>
   );
 }
