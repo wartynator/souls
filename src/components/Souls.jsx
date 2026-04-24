@@ -8,6 +8,7 @@ import ContactForm from "./ContactForm.jsx";
 import ContactDetail from "./ContactDetail.jsx";
 import DeviceForm from "./DeviceForm.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
+import BarcodeScanner from "./BarcodeScanner.jsx";
 import { useToast } from "./Toast.jsx";
 import { useLocale } from "../i18n.jsx";
 
@@ -25,6 +26,7 @@ export default function Souls() {
 
   const [tab, setTab] = useState("contacts"); // "contacts" | "devices"
   const [query, setQuery] = useState("");
+  const [searchScannerOpen, setSearchScannerOpen] = useState(false);
 
   // Dialog state
   const [contactFormOpen, setContactFormOpen] = useState(false);
@@ -172,6 +174,13 @@ export default function Souls() {
         </nav>
       </header>
 
+      {searchScannerOpen && (
+        <BarcodeScanner
+          onScan={(value) => { setQuery(value); setSearchScannerOpen(false); }}
+          onClose={() => setSearchScannerOpen(false)}
+        />
+      )}
+
       <div className="toolbar">
         <div className="search">
           <svg className="search__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -179,12 +188,30 @@ export default function Souls() {
             <path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           <input
-            className="search__input"
+            className={`search__input${tab === "devices" ? " search__input--scannable" : ""}`}
             type="search"
             placeholder={tab === "contacts" ? t("searchContacts") : t("searchDevices")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
+          {tab === "devices" && (
+            <button
+              type="button"
+              className="search__scan-btn"
+              onClick={() => setSearchScannerOpen(true)}
+              title={t("searchByBarcode")}
+              aria-label={t("searchByBarcode")}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="2" y="4" width="2" height="16" fill="currentColor" />
+                <rect x="6" y="4" width="1" height="16" fill="currentColor" />
+                <rect x="9" y="4" width="2" height="16" fill="currentColor" />
+                <rect x="13" y="4" width="1" height="16" fill="currentColor" />
+                <rect x="16" y="4" width="3" height="16" fill="currentColor" />
+                <rect x="21" y="4" width="1" height="16" fill="currentColor" />
+              </svg>
+            </button>
+          )}
         </div>
         <button className="btn btn--primary" onClick={handleAdd}>
           <span aria-hidden="true">+</span>

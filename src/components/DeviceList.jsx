@@ -8,7 +8,7 @@ export default function DeviceList({ devices, query, onOpen }) {
     let list = devices;
     if (q) {
       list = list.filter((d) => {
-        const hay = [d.name, d.notes, d.ownerName].filter(Boolean).join(" ").toLowerCase();
+        const hay = [d.name, d.notes, d.ownerName, d.barcode].filter(Boolean).join(" ").toLowerCase();
         return hay.includes(q);
       });
     }
