@@ -182,7 +182,7 @@ export default function Souls() {
       )}
 
       <div className="toolbar">
-        <div className={`search${tab === "devices" ? " search--has-action" : ""}`}>
+        <div className="search">
           <svg className="search__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" />
             <path d="m20 20-3.5-3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
