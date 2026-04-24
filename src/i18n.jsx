@@ -85,6 +85,7 @@ const en = {
   deviceUnnamed: "Unnamed device",
   deviceOwnerRemoved: "Owner removed",
   // barcode
+  searchByBarcode: "Search by barcode",
   fieldBarcode: "Barcode",
   fieldBarcodePlaceholder: "Scan or enter barcode",
   scanBarcode: "Scan barcode",
@@ -196,6 +197,7 @@ const sk = {
   scannerDetected: "Čiarový kód naskenovaný",
   scannerRescan: "Skenovať znova",
   scannerUse: "Použiť",
+  searchByBarcode: "Vyhľadať podľa čiarového kódu",
   scannerCameraError:
     "Nepodarilo sa získať prístup ku kamere. Skontrolujte povolenia.",
   // confirm dialog

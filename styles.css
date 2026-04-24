@@ -157,6 +157,24 @@ a:hover { text-decoration: underline; }
 }
 .search__input:focus { outline: none; border-color: var(--ink); }
 .search__input::placeholder { color: var(--ink-mute); }
+.search__input--scannable { padding-right: 40px; }
+
+.search__scan-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-mute);
+  border-radius: var(--radius-sm);
+  transition: color .12s ease, background .12s ease;
+  padding: 0;
+}
+.search__scan-btn:hover { color: var(--ink); background: var(--bg-soft); }
 
 /* ---------- Lists ---------- */
 .panel { display: none; }
