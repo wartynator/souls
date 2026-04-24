@@ -39,11 +39,17 @@ export default defineSchema({
 
   actions: defineTable({
     userId: v.id("users"),
-    deviceId: v.optional(v.id("devices")),
     name: v.string(),
     price: v.optional(v.number()),
     notes: v.optional(v.string()),
+  }).index("by_user", ["userId"]),
+
+  deviceActions: defineTable({
+    userId: v.id("users"),
+    deviceId: v.id("devices"),
+    actionId: v.id("actions"),
     date: v.string(), // ISO date "YYYY-MM-DD"
+    notes: v.optional(v.string()),
   })
     .index("by_user", ["userId"])
     .index("by_device", ["deviceId"]),

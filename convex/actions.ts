@@ -25,56 +25,26 @@ export const list = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
-
-    const actions = await ctx.db
-      .query("actions")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
-
-    // Attach device name for display in the list
-    return Promise.all(
-      actions.map(async (a) => {
-        const device = await ctx.db.get(a.deviceId);
-        return { ...a, deviceName: device?.name ?? null };
-      }),
-    );
-  },
-});
-
-export const listByDevice = query({
-  args: { deviceId: v.id("devices") },
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) return [];
-
     return ctx.db
       .query("actions")
-      .withIndex("by_device", (q) => q.eq("deviceId", args.deviceId))
+      .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
   },
 });
 
 export const create = mutation({
   args: {
-    deviceId: v.optional(v.id("devices")),
     name: v.string(),
     price: v.optional(v.number()),
     notes: v.optional(v.string()),
-    date: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
-    if (args.deviceId) {
-      const device = await ctx.db.get(args.deviceId);
-      if (!device || device.userId !== userId) throw new Error("Device not found");
-    }
     return ctx.db.insert("actions", {
       userId,
-      deviceId: args.deviceId ?? undefined,
       name: args.name.trim(),
       price: args.price ?? undefined,
       notes: args.notes?.trim() || undefined,
-      date: args.date,
     });
   },
 });
@@ -82,22 +52,17 @@ export const create = mutation({
 export const update = mutation({
   args: {
     id: v.id("actions"),
-    deviceId: v.optional(v.id("devices")),
     name: v.string(),
     price: v.optional(v.number()),
     notes: v.optional(v.string()),
-    date: v.string(),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
     await ownedAction(ctx, userId, args.id);
-
     await ctx.db.patch(args.id, {
-      deviceId: args.deviceId ?? undefined,
       name: args.name.trim(),
       price: args.price ?? undefined,
       notes: args.notes?.trim() || undefined,
-      date: args.date,
     });
   },
 });
