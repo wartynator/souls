@@ -22,6 +22,21 @@
   --shadow: 0 10px 40px -12px rgba(0,0,0,.12);
 }
 
+/* ---------- Dark mode ---------- */
+[data-theme="dark"] {
+  --bg:        #121212;
+  --bg-soft:   #1e1e1e;
+  --ink:       #efefef;
+  --ink-2:     #c8c8c8;
+  --ink-mute:  #888888;
+  --ink-faint: #505050;
+  --rule:      #2c2c2c;
+  --rule-2:    #3a3a3a;
+  --accent:    #efefef;
+  --danger:    #e06055;
+  --shadow:    0 10px 40px -12px rgba(0,0,0,.5);
+}
+
 * { box-sizing: border-box; }
 
 html, body {
@@ -755,6 +770,157 @@ select.field__input {
   from { opacity: 0; transform: translateY(6px) scale(.98); }
   to   { opacity: 1; transform: translateY(0)   scale(1); }
 }
+
+/* ---------- Settings panel ---------- */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 300;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+.settings-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.settings-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(300px, 85vw);
+  background: var(--bg);
+  z-index: 301;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .25s ease;
+  box-shadow: -4px 0 32px rgba(0,0,0,.15);
+}
+.settings-panel.is-open { transform: translateX(0); }
+
+.settings-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--rule);
+}
+.settings-panel__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.settings-panel__body {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.settings-panel__email {
+  font-size: 13px;
+  color: var(--ink-mute);
+  margin: 0 0 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--rule);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.settings-row__label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.settings-toggle {
+  width: 44px;
+  height: 26px;
+  border-radius: 13px;
+  background: var(--rule-2);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background .2s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+.settings-toggle.is-on { background: var(--ink); }
+.settings-toggle__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg);
+  transition: transform .2s ease;
+  display: block;
+  pointer-events: none;
+}
+.settings-toggle.is-on .settings-toggle__thumb { transform: translateX(18px); }
+
+.settings-lang {
+  display: flex;
+  gap: 4px;
+}
+.settings-lang__btn {
+  padding: 5px 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--rule-2);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-mute);
+  background: var(--bg);
+  cursor: pointer;
+  transition: all .12s ease;
+}
+.settings-lang__btn.is-active {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.settings-panel__foot {
+  padding: 16px 20px 28px;
+  border-top: 1px solid var(--rule);
+}
+.settings-panel__signout {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Topbar settings button (mobile only) */
+.topbar__settings-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--ink-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  padding: 0;
+  transition: color .12s ease, background .12s ease;
+}
+.topbar__settings-btn:hover { color: var(--ink); background: var(--bg-soft); }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 560px) {
