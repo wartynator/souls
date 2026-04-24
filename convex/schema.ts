@@ -36,4 +36,15 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_contact", ["contactId"])
     .index("by_user_and_contact", ["userId", "contactId"]),
+
+  actions: defineTable({
+    userId: v.id("users"),
+    deviceId: v.id("devices"),
+    name: v.string(),
+    price: v.optional(v.number()),
+    notes: v.optional(v.string()),
+    date: v.string(), // ISO date "YYYY-MM-DD"
+  })
+    .index("by_user", ["userId"])
+    .index("by_device", ["deviceId"]),
 });

@@ -24,10 +24,14 @@ const en = {
   // toolbar
   searchContacts: "Search contacts",
   searchDevices: "Search devices",
+  searchActions: "Search actions",
   addContact: "Add contact",
   addDevice: "Add device",
+  addAction: "Add action",
+  tabActions: "Actions",
   // toasts
   toastAddContactFirst: "Add a contact first",
+  toastAddDeviceFirst: "Add a device first",
   toastContactAdded: "Contact added",
   toastContactUpdated: "Contact updated",
   toastContactDeleted: "Contact deleted",
@@ -40,12 +44,19 @@ const en = {
   toastDeviceNameRequired: "Device name is required",
   toastOwnerRequired: "Owner is required",
   toastCouldNotSaveDevice: "Could not save device",
+  toastActionAdded: "Action added",
+  toastActionUpdated: "Action updated",
+  toastActionDeleted: "Action deleted",
+  toastActionNameRequired: "Action name is required",
+  toastInvalidPrice: "Invalid price",
   // empty states
   emptyNoContactsTitle: "No contacts yet",
   emptyNoContactsText: "Tap \u201c{addContact}\u201d to create your first entry.",
   emptyNoDevicesTitle: "No devices yet",
   emptyNoDevicesText:
     "Devices must be assigned to a contact. Add a contact first, then add their devices.",
+  emptyNoActionsTitle: "No actions yet",
+  emptyNoActionsText: "Select a device and record what was done — repairs, upgrades, maintenance.",
   emptyNoMatchesTitle: "No matches",
   emptyNoMatchesText: "Nothing found for \u201c{query}\u201d.",
   // contact list
@@ -73,6 +84,16 @@ const en = {
   detailDeleteContact: "Delete contact",
   btnClose: "Close",
   btnEdit: "Edit",
+  // action form
+  actionFormNew: "New action",
+  actionFormEdit: "Edit action",
+  fieldActionName: "Action",
+  fieldActionNamePlaceholder: "e.g. Battery replaced, Screen repaired",
+  fieldActionDevice: "Device",
+  fieldActionDate: "Date",
+  fieldActionPrice: "Price",
+  fieldActionPricePlaceholder: "e.g. 49.90",
+  fieldActionNotesPlaceholder: "Parts used, workshop, warranty info…",
   // device form
   deviceFormNew: "New device",
   deviceFormEdit: "Edit device",
@@ -136,10 +157,14 @@ const sk = {
   // toolbar
   searchContacts: "Hľadať kontakty",
   searchDevices: "Hľadať zariadenia",
+  searchActions: "Hľadať akcie",
   addContact: "Pridať kontakt",
   addDevice: "Pridať zariadenie",
+  addAction: "Pridať akciu",
+  tabActions: "Akcie",
   // toasts
   toastAddContactFirst: "Najprv pridajte kontakt",
+  toastAddDeviceFirst: "Najprv pridajte zariadenie",
   toastContactAdded: "Kontakt pridaný",
   toastContactUpdated: "Kontakt aktualizovaný",
   toastContactDeleted: "Kontakt vymazaný",
@@ -152,12 +177,19 @@ const sk = {
   toastDeviceNameRequired: "Názov zariadenia je povinný",
   toastOwnerRequired: "Vlastník je povinný",
   toastCouldNotSaveDevice: "Zariadenie sa nepodarilo uložiť",
+  toastActionAdded: "Akcia pridaná",
+  toastActionUpdated: "Akcia aktualizovaná",
+  toastActionDeleted: "Akcia vymazaná",
+  toastActionNameRequired: "Názov akcie je povinný",
+  toastInvalidPrice: "Neplatná cena",
   // empty states
   emptyNoContactsTitle: "Zatiaľ žiadne kontakty",
   emptyNoContactsText: "Klepnite na \u201e{addContact}\u201c a vytvorte prvý záznam.",
   emptyNoDevicesTitle: "Zatiaľ žiadne zariadenia",
   emptyNoDevicesText:
     "Zariadenia musia byť priradené ku kontaktu. Najprv pridajte kontakt, potom pridajte jeho zariadenia.",
+  emptyNoActionsTitle: "Zatiaľ žiadne akcie",
+  emptyNoActionsText: "Vyberte zariadenie a zaznamenajte, čo bolo vykonané – opravy, upgrady, údržba.",
   emptyNoMatchesTitle: "Žiadne výsledky",
   emptyNoMatchesText: "Nič sa nenašlo pre \u201e{query}\u201c.",
   // contact list — Slovak has three plural forms: 1 / 2–4 / 5+
@@ -186,6 +218,16 @@ const sk = {
   detailDeleteContact: "Vymazať kontakt",
   btnClose: "Zavrieť",
   btnEdit: "Upraviť",
+  // action form
+  actionFormNew: "Nová akcia",
+  actionFormEdit: "Upraviť akciu",
+  fieldActionName: "Akcia",
+  fieldActionNamePlaceholder: "napr. Výmena batérie, Oprava displeja",
+  fieldActionDevice: "Zariadenie",
+  fieldActionDate: "Dátum",
+  fieldActionPrice: "Cena",
+  fieldActionPricePlaceholder: "napr. 49.90",
+  fieldActionNotesPlaceholder: "Použité diely, servis, záruka…",
   // device form
   deviceFormNew: "Nové zariadenie",
   deviceFormEdit: "Upraviť zariadenie",
