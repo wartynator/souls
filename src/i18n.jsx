@@ -94,6 +94,7 @@ const en = {
   detailAddress: "Address",
   detailCity: "City",
   detailNotes: "Notes",
+  detailLogWork: "Log work",
   detailDevices: "Devices",
   detailAddDevice: "+ Add device",
   detailNoDevices: "No devices linked to this contact.",
@@ -119,6 +120,7 @@ const en = {
   // device form
   deviceFormNew: "New device",
   deviceFormEdit: "Edit device",
+  deviceLogWork: "Log work",
   fieldDeviceName: "Device name",
   fieldOwner: "Owner",
   fieldOwnerSearch: "Search contacts…",
@@ -262,6 +264,7 @@ const sk = {
   detailAddress: "Adresa",
   detailCity: "Mesto",
   detailNotes: "Poznámky",
+  detailLogWork: "Zaznamenať prácu",
   detailDevices: "Zariadenia",
   detailAddDevice: "+ Pridať zariadenie",
   detailNoDevices: "K tomuto kontaktu nie sú priradené žiadne zariadenia.",
@@ -287,6 +290,7 @@ const sk = {
   // device form
   deviceFormNew: "Nové zariadenie",
   deviceFormEdit: "Upraviť zariadenie",
+  deviceLogWork: "Zaznamenať prácu",
   fieldDeviceName: "Názov zariadenia",
   fieldOwner: "Vlastník",
   fieldOwnerSearch: "Hľadať kontakty…",

@@ -54,6 +54,8 @@ export default function Souls() {
 
   const [worklistFormOpen, setWorklistFormOpen] = useState(false);
   const [worklistFormId, setWorklistFormId] = useState(null);
+  const [worklistFormPresetContact, setWorklistFormPresetContact] = useState(null);
+  const [worklistFormPresetDevice, setWorklistFormPresetDevice] = useState(null);
 
   const [confirm, setConfirm] = useState(null); // { kind, id, title, text }
 
@@ -84,6 +86,8 @@ export default function Souls() {
         return;
       }
       setWorklistFormId(null);
+      setWorklistFormPresetContact(null);
+      setWorklistFormPresetDevice(null);
       setWorklistFormOpen(true);
     } else {
       setActionFormId(null);
@@ -127,6 +131,22 @@ export default function Souls() {
     setDeviceFormId(null);
     setDeviceFormPresetOwner(contactId);
     setDeviceFormOpen(true);
+  };
+
+  const addWorklistForContact = (contactId) => {
+    setDetailOpen(false);
+    setWorklistFormId(null);
+    setWorklistFormPresetContact(contactId);
+    setWorklistFormPresetDevice(null);
+    setWorklistFormOpen(true);
+  };
+
+  const addWorklistForDevice = (deviceId, contactId) => {
+    setDeviceFormOpen(false);
+    setWorklistFormId(null);
+    setWorklistFormPresetContact(contactId);
+    setWorklistFormPresetDevice(deviceId);
+    setWorklistFormOpen(true);
   };
 
   const deleteDeviceFromForm = () => {
@@ -317,7 +337,7 @@ export default function Souls() {
           <WorklistList
             worklist={worklist}
             query={query}
-            onOpen={(id) => { setWorklistFormId(id); setWorklistFormOpen(true); }}
+            onOpen={(id) => { setWorklistFormId(id); setWorklistFormPresetContact(null); setWorklistFormPresetDevice(null); setWorklistFormOpen(true); }}
           />
         )}
       </main>
@@ -351,6 +371,7 @@ export default function Souls() {
         onEdit={editContactFromDetail}
         onDelete={deleteContactFromDetail}
         onAddDevice={addDeviceForContact}
+        onAddWorklist={addWorklistForContact}
         onOpenDevice={(id) => {
           setDetailOpen(false);
           editDevice(id);
@@ -363,9 +384,9 @@ export default function Souls() {
         presetOwnerId={deviceFormPresetOwner}
         devices={devices}
         contacts={contacts}
-        actions={actions}
         onClose={() => setDeviceFormOpen(false)}
         onDelete={deleteDeviceFromForm}
+        onAddWorklist={addWorklistForDevice}
       />
 
       <ActionForm
@@ -383,6 +404,8 @@ export default function Souls() {
         worklist={worklist}
         contacts={contacts}
         devices={devices}
+        presetContactId={worklistFormPresetContact}
+        presetDeviceId={worklistFormPresetDevice}
         onClose={() => setWorklistFormOpen(false)}
         onDelete={deleteWorklistFromForm}
       />

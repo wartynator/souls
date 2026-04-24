@@ -11,6 +11,7 @@ export default function ContactDetail({
   onDelete,
   onAddDevice,
   onOpenDevice,
+  onAddWorklist,
 }) {
   const { t } = useLocale();
   const contact = contactId ? contacts.find((c) => c._id === contactId) : null;
@@ -134,6 +135,11 @@ export default function ContactDetail({
             {t("detailDeleteContact")}
           </button>
           <div className="dialog__foot-end">
+            {onAddWorklist && (
+              <button type="button" className="btn btn--ghost" onClick={() => onAddWorklist(contact._id)}>
+                {t("detailLogWork")}
+              </button>
+            )}
             <button type="button" className="btn btn--ghost" onClick={onClose}>
               {t("btnClose")}
             </button>

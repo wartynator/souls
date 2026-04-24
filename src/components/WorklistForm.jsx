@@ -19,6 +19,8 @@ export default function WorklistForm({
   worklist,
   contacts,
   devices,
+  presetContactId,
+  presetDeviceId,
   onClose,
   onDelete,
 }) {
@@ -75,9 +77,12 @@ export default function WorklistForm({
       setActionType(editing.actionType);
       setNotes(editing.notes || "");
     } else {
-      setContactId("");
-      setContactSearch("");
-      setDeviceId("");
+      const presetContact = presetContactId
+        ? contacts.find((c) => c._id === presetContactId)
+        : null;
+      setContactId(presetContact?._id || "");
+      setContactSearch(presetContact ? contactFullName(presetContact) : "");
+      setDeviceId(presetDeviceId || "");
       setDate(todayISO());
       setActionType("");
       setNotes("");
@@ -85,12 +90,11 @@ export default function WorklistForm({
     setContactOpen(false);
     setContactHighlight(0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, entryId]);
+  }, [open, entryId, presetContactId, presetDeviceId]);
 
-  // reset device when contact changes
+  // reset device when contact changes (but not when a preset device was just applied)
   useEffect(() => {
     if (!contactId) { setDeviceId(""); return; }
-    // if current device still belongs to this contact, keep it
     const stillValid = contactDevices.some((d) => d._id === deviceId);
     if (!stillValid) setDeviceId(contactDevices[0]?._id || "");
   }, [contactId, contactDevices, deviceId]);
