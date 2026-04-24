@@ -137,7 +137,11 @@ export default function ContactImport({ onDone }) {
         className="btn btn--ghost"
         onClick={() => fileRef.current?.click()}
       >
-        {t("importContacts")}
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M7 10l5-5 5 5M12 5v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span className="btn__label">{t("importContacts")}</span>
       </button>
 
       {/* Error dialog */}
