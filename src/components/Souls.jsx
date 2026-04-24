@@ -28,6 +28,7 @@ export default function Souls() {
   const deleteContact = useMutation(api.contacts.remove);
   const deleteDevice = useMutation(api.devices.remove);
   const deleteAction = useMutation(api.actions.remove);
+  // used by ActionForm's onDelete via confirm dialog
 
   const [tab, setTab] = useState("contacts"); // "contacts" | "devices" | "actions"
   const [query, setQuery] = useState("");
@@ -308,6 +309,7 @@ export default function Souls() {
         presetOwnerId={deviceFormPresetOwner}
         devices={devices}
         contacts={contacts}
+        actions={actions}
         onClose={() => setDeviceFormOpen(false)}
         onDelete={deleteDeviceFromForm}
       />

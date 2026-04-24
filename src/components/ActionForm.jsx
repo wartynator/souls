@@ -5,58 +5,32 @@ import Dialog from "./Dialog.jsx";
 import { useToast } from "./Toast.jsx";
 import { useLocale } from "../i18n.jsx";
 
-function today() {
-  return new Date().toISOString().slice(0, 10);
-}
-
-export default function ActionForm({
-  open,
-  actionId,
-  presetDeviceId,
-  devices,
-  onClose,
-  onDelete,
-}) {
+export default function ActionForm({ open, actionId, onClose, onDelete }) {
   const { t } = useLocale();
   const toast = useToast();
-
-  const existing = useQuery(
-    api.actions.listByDevice,
-    presetDeviceId ? { deviceId: presetDeviceId } : "skip",
-  );
-
+  const allActions = useQuery(api.actions.list);
   const createAction = useMutation(api.actions.create);
   const updateAction = useMutation(api.actions.update);
 
-  const [deviceId, setDeviceId] = useState(""); // "" means no device
+  const editing = actionId ? allActions?.find((a) => a._id === actionId) : null;
+
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [notes, setNotes] = useState("");
-  const [date, setDate] = useState(today());
   const [saving, setSaving] = useState(false);
-
-  // When editing, load the existing action data from the parent-passed list
-  const allActions = useQuery(api.actions.list);
-  const editingAction = actionId
-    ? allActions?.find((a) => a._id === actionId)
-    : null;
 
   useEffect(() => {
     if (!open) return;
-    if (editingAction) {
-      setDeviceId(editingAction.deviceId);
-      setName(editingAction.name);
-      setPrice(editingAction.price != null ? String(editingAction.price) : "");
-      setNotes(editingAction.notes ?? "");
-      setDate(editingAction.date);
+    if (editing) {
+      setName(editing.name);
+      setPrice(editing.price != null ? String(editing.price) : "");
+      setNotes(editing.notes ?? "");
     } else {
-      setDeviceId(presetDeviceId ?? "");
       setName("");
       setPrice("");
       setNotes("");
-      setDate(today());
     }
-  }, [open, actionId, presetDeviceId]);
+  }, [open, actionId, editing?.name]);
 
   if (!open) return null;
 
@@ -67,15 +41,13 @@ export default function ActionForm({
     const parsedPrice = price.trim() ? parseFloat(price.replace(",", ".")) : undefined;
     if (price.trim() && isNaN(parsedPrice)) { toast.show(t("toastInvalidPrice")); return; }
 
-    const resolvedDeviceId = deviceId || undefined;
-
     setSaving(true);
     try {
       if (actionId) {
-        await updateAction({ id: actionId, deviceId: resolvedDeviceId, name: name.trim(), price: parsedPrice, notes: notes.trim() || undefined, date });
+        await updateAction({ id: actionId, name: name.trim(), price: parsedPrice, notes: notes.trim() || undefined });
         toast.show(t("toastActionUpdated"));
       } else {
-        await createAction({ deviceId: resolvedDeviceId, name: name.trim(), price: parsedPrice, notes: notes.trim() || undefined, date });
+        await createAction({ name: name.trim(), price: parsedPrice, notes: notes.trim() || undefined });
         toast.show(t("toastActionAdded"));
       }
       onClose();
@@ -90,27 +62,10 @@ export default function ActionForm({
     <Dialog open onClose={onClose}>
       <form className="dialog__form" onSubmit={handleSubmit}>
         <header className="dialog__head">
-          <h2 className="dialog__title">
-            {actionId ? t("actionFormEdit") : t("actionFormNew")}
-          </h2>
+          <h2 className="dialog__title">{actionId ? t("actionFormEdit") : t("actionFormNew")}</h2>
           <button type="button" className="dialog__close" onClick={onClose} aria-label="Close">×</button>
         </header>
-
         <div className="dialog__body">
-          <div className="field">
-            <label className="field__label">{t("fieldActionDevice")}</label>
-            <select
-              className="field__input"
-              value={deviceId}
-              onChange={(e) => setDeviceId(e.target.value)}
-            >
-              <option value="">{t("fieldActionDeviceNone")}</option>
-              {devices.map((d) => (
-                <option key={d._id} value={d._id}>{d.name}</option>
-              ))}
-            </select>
-          </div>
-
           <div className="field">
             <label className="field__label">{t("fieldActionName")}</label>
             <input
@@ -122,17 +77,6 @@ export default function ActionForm({
               autoFocus
             />
           </div>
-
-          <div className="field">
-            <label className="field__label">{t("fieldActionDate")}</label>
-            <input
-              className="field__input"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </div>
-
           <div className="field">
             <label className="field__label">{t("fieldActionPrice")}</label>
             <input
@@ -144,7 +88,6 @@ export default function ActionForm({
               placeholder={t("fieldActionPricePlaceholder")}
             />
           </div>
-
           <div className="field">
             <label className="field__label">{t("fieldNotes")}</label>
             <textarea
@@ -155,11 +98,10 @@ export default function ActionForm({
             />
           </div>
         </div>
-
         <footer className="dialog__foot">
           <div>
             {actionId && (
-              <button type="button" className="btn btn--ghost btn--danger" onClick={onDelete}>
+              <button type="button" className="btn btn--text btn--danger" onClick={onDelete}>
                 {t("btnDelete")}
               </button>
             )}

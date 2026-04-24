@@ -675,6 +675,73 @@ select.field__input {
   .auth__title { font-size: 40px; }
 }
 
+/* ---------- Service history (inside DeviceForm) ---------- */
+.service-history__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.service-history__empty,
+.service-history__hint {
+  font-size: 13px;
+  color: var(--ink-mute);
+  font-style: italic;
+  margin: 0;
+}
+.service-history__list {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+}
+.service-history__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.service-history__row:last-child { border-bottom: none; }
+.service-history__info { flex: 1; min-width: 0; }
+.service-history__name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.service-history__meta {
+  margin: 1px 0 0;
+  font-size: 12px;
+  color: var(--ink-mute);
+}
+.service-history__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.service-history__price {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.service-history__remove {
+  width: 24px;
+  height: 24px;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--ink-faint);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .12s, background .12s;
+}
+.service-history__remove:hover { color: var(--danger); background: var(--bg-soft); }
+
 /* ---------- Action list ---------- */
 .row__action-meta {
   display: flex;
