@@ -187,14 +187,26 @@ export default function DeviceForm({
       <form className="dialog__form" onSubmit={handleSubmit}>
         <header className="dialog__head">
           <h2 className="dialog__title">{editing ? t("deviceFormEdit") : t("deviceFormNew")}</h2>
-          <button
-            type="button"
-            className="dialog__close"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            ×
-          </button>
+          <div className="dialog__head-actions">
+            {editing && onAddWorklist && (
+              <button
+                type="button"
+                className="dialog__action-btn"
+                onClick={() => onAddWorklist(editing._id, editing.contactId)}
+                title={t("deviceLogWork")}
+                aria-label={t("deviceLogWork")}
+              >
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                  <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
+            )}
+            <button type="button" className="dialog__close" onClick={onClose} aria-label="Close">
+              ×
+            </button>
+          </div>
         </header>
         <div className="dialog__body">
           <label className="field">
@@ -289,29 +301,15 @@ export default function DeviceForm({
               </button>
             </div>
           </label>
+          {editing && (
+            <button type="button" className="form-delete-link" onClick={onDelete}>
+              {t("btnDeleteDevice")}
+            </button>
+          )}
         </div>
         <footer className="dialog__foot">
-          {editing ? (
-            <button
-              type="button"
-              className="btn btn--text btn--danger"
-              onClick={onDelete}
-            >
-              {t("btnDelete")}
-            </button>
-          ) : (
-            <span />
-          )}
+          <span />
           <div className="dialog__foot-end">
-            {editing && onAddWorklist && (
-              <button
-                type="button"
-                className="btn btn--ghost"
-                onClick={() => onAddWorklist(editing._id, editing.contactId)}
-              >
-                {t("deviceLogWork")}
-              </button>
-            )}
             <button type="button" className="btn btn--ghost" onClick={onClose}>
               {t("btnCancel")}
             </button>
