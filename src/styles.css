@@ -508,6 +508,28 @@ a:hover { text-decoration: underline; }
   margin: 0;
   line-height: 1.1;
 }
+.dialog__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.dialog__action-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-mute);
+  border-radius: 50%;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all .12s ease;
+}
+.dialog__action-btn:hover { background: var(--bg-soft); color: var(--ink); }
+
 .dialog__close {
   width: 32px;
   height: 32px;
@@ -544,6 +566,31 @@ a:hover { text-decoration: underline; }
   gap: 8px;
   align-items: center;
 }
+
+/* Delete link inside form body */
+.form-delete-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 0;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--danger);
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity .12s ease;
+}
+.form-delete-link:hover { opacity: 1; text-decoration: underline; }
+
+/* Barcode field row (input + scan button side by side) */
+.field__input-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.field__input-row .field__input { flex: 1; }
+.field__scan-btn { flex-shrink: 0; }
 
 /* ---------- Form fields ---------- */
 .field {
