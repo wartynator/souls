@@ -16,21 +16,29 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
     : null;
 
   const [name, setName] = useState("");
+  const [surname, setSurname] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // Reset form whenever the dialog is opened
   useEffect(() => {
     if (!open) return;
     if (editing) {
       setName(editing.name || "");
+      setSurname(editing.surname || "");
+      setAddress(editing.address || "");
+      setCity(editing.city || "");
       setPhone(editing.phone || "");
       setEmail(editing.email || "");
       setNotes(editing.notes || "");
     } else {
       setName("");
+      setSurname("");
+      setAddress("");
+      setCity("");
       setPhone("");
       setEmail("");
       setNotes("");
@@ -51,6 +59,9 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
         await updateContact({
           id: editing._id,
           name,
+          surname: surname || undefined,
+          address: address || undefined,
+          city: city || undefined,
           phone: phone || undefined,
           email: email || undefined,
           notes: notes || undefined,
@@ -59,6 +70,9 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
       } else {
         await createContact({
           name,
+          surname: surname || undefined,
+          address: address || undefined,
+          city: city || undefined,
           phone: phone || undefined,
           email: email || undefined,
           notes: notes || undefined,
@@ -89,17 +103,52 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
           </button>
         </header>
         <div className="dialog__body">
+          <div className="field-row">
+            <label className="field">
+              <span className="field__label">{t("fieldName")}</span>
+              <input
+                className="field__input"
+                type="text"
+                autoComplete="given-name"
+                maxLength={100}
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoFocus
+              />
+            </label>
+            <label className="field">
+              <span className="field__label">{t("fieldSurname")}</span>
+              <input
+                className="field__input"
+                type="text"
+                autoComplete="family-name"
+                maxLength={100}
+                value={surname}
+                onChange={(e) => setSurname(e.target.value)}
+              />
+            </label>
+          </div>
           <label className="field">
-            <span className="field__label">{t("fieldName")}</span>
+            <span className="field__label">{t("fieldAddress")}</span>
             <input
               className="field__input"
               type="text"
-              autoComplete="name"
+              autoComplete="street-address"
+              maxLength={200}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </label>
+          <label className="field">
+            <span className="field__label">{t("fieldCity")}</span>
+            <input
+              className="field__input"
+              type="text"
+              autoComplete="address-level2"
               maxLength={100}
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              autoFocus
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
             />
           </label>
           <label className="field">

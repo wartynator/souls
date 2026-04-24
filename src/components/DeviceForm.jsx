@@ -42,10 +42,17 @@ export default function DeviceForm({
   const [scannerOpen, setScannerOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const contactFullName = (c) =>
+    [c.name, c.surname].filter(Boolean).join(" ");
+
   const sortedContacts = useMemo(
     () =>
       [...contacts].sort((a, b) =>
-        (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }),
+        ((a.surname || a.name) || "").localeCompare(
+          (b.surname || b.name) || "",
+          undefined,
+          { sensitivity: "base" },
+        ),
       ),
     [contacts],
   );
@@ -54,8 +61,9 @@ export default function DeviceForm({
     const q = ownerSearch.trim().toLowerCase();
     if (!q) return sortedContacts;
     return sortedContacts.filter((c) =>
-      (c.name || "").toLowerCase().includes(q),
+      contactFullName(c).toLowerCase().includes(q),
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortedContacts, ownerSearch]);
 
   useEffect(() => {
@@ -64,7 +72,7 @@ export default function DeviceForm({
       setName(editing.name || "");
       setOwnerId(editing.contactId);
       const ownerContact = contacts.find((c) => c._id === editing.contactId);
-      setOwnerSearch(ownerContact?.name || "");
+      setOwnerSearch(ownerContact ? contactFullName(ownerContact) : "");
       setNotes(editing.notes || "");
       setBarcode(editing.barcode || "");
     } else {
@@ -73,7 +81,7 @@ export default function DeviceForm({
         ? contacts.find((c) => c._id === presetOwnerId)
         : sortedContacts[0];
       setOwnerId(presetContact?._id || "");
-      setOwnerSearch(presetContact?.name || "");
+      setOwnerSearch(presetContact ? contactFullName(presetContact) : "");
       setNotes("");
       setBarcode("");
     }
@@ -84,7 +92,7 @@ export default function DeviceForm({
 
   const selectOwner = (contact) => {
     setOwnerId(contact._id);
-    setOwnerSearch(contact.name || "");
+    setOwnerSearch(contactFullName(contact));
     setOwnerOpen(false);
     setOwnerHighlight(0);
   };
@@ -112,7 +120,7 @@ export default function DeviceForm({
     } else if (e.key === "Escape") {
       setOwnerOpen(false);
       const prev = contacts.find((c) => c._id === ownerId);
-      setOwnerSearch(prev?.name || "");
+      setOwnerSearch(prev ? contactFullName(prev) : "");
     }
   };
 
@@ -121,14 +129,14 @@ export default function DeviceForm({
       setOwnerOpen(false);
       if (ownerId) {
         const selected = contacts.find((c) => c._id === ownerId);
-        setOwnerSearch(selected?.name || "");
+        setOwnerSearch(selected ? contactFullName(selected) : "");
       } else if (ownerSearch.trim()) {
         const match = sortedContacts.find(
-          (c) => (c.name || "").toLowerCase() === ownerSearch.trim().toLowerCase(),
+          (c) => contactFullName(c).toLowerCase() === ownerSearch.trim().toLowerCase(),
         );
         if (match) {
           setOwnerId(match._id);
-          setOwnerSearch(match.name || "");
+          setOwnerSearch(contactFullName(match));
         } else {
           setOwnerSearch("");
         }
@@ -248,7 +256,7 @@ export default function DeviceForm({
                       className={`combobox__option${i === ownerHighlight ? " is-highlight" : ""}${c._id === ownerId ? " is-selected" : ""}`}
                       onMouseDown={(e) => { e.preventDefault(); selectOwner(c); }}
                     >
-                      {c.name || t("contactUnnamed")}
+                      {contactFullName(c) || t("contactUnnamed")}
                     </li>
                   ))}
                 </ul>

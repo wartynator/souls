@@ -21,16 +21,17 @@ export default function ContactDetail({
     : [];
 
   if (!contact) {
-    // Contact has been deleted while detail was open — auto-close
     if (open) onClose();
     return null;
   }
+
+  const fullName = [contact.name, contact.surname].filter(Boolean).join(" ");
 
   return (
     <Dialog open={open} onClose={onClose}>
       <div className="dialog__form">
         <header className="dialog__head">
-          <h2 className="dialog__title">{contact.name}</h2>
+          <h2 className="dialog__title">{fullName || t("contactUnnamed")}</h2>
           <button
             type="button"
             className="dialog__close"
@@ -56,6 +57,18 @@ export default function ContactDetail({
                 <dd>
                   <a href={`mailto:${contact.email}`}>{contact.email}</a>
                 </dd>
+              </div>
+            )}
+            {contact.address && (
+              <div className="detail__row">
+                <dt>{t("detailAddress")}</dt>
+                <dd>{contact.address}</dd>
+              </div>
+            )}
+            {contact.city && (
+              <div className="detail__row">
+                <dt>{t("detailCity")}</dt>
+                <dd>{contact.city}</dd>
               </div>
             )}
             {contact.notes && (
