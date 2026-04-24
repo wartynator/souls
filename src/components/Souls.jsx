@@ -5,10 +5,12 @@ import { api } from "../../convex/_generated/api";
 import ContactList from "./ContactList.jsx";
 import DeviceList from "./DeviceList.jsx";
 import ActionList from "./ActionList.jsx";
+import WorklistList from "./WorklistList.jsx";
 import ContactForm from "./ContactForm.jsx";
 import ContactDetail from "./ContactDetail.jsx";
 import DeviceForm from "./DeviceForm.jsx";
 import ActionForm from "./ActionForm.jsx";
+import WorklistForm from "./WorklistForm.jsx";
 import ConfirmDialog from "./ConfirmDialog.jsx";
 import BarcodeScanner from "./BarcodeScanner.jsx";
 import ContactImport from "./ContactImport.jsx";
@@ -23,14 +25,15 @@ export default function Souls() {
   const contacts = useQuery(api.contacts.list) ?? [];
   const devices = useQuery(api.devices.list) ?? [];
   const actions = useQuery(api.actions.list) ?? [];
+  const worklist = useQuery(api.worklist.list) ?? [];
   const currentUser = useQuery(api.users.currentUser);
 
   const deleteContact = useMutation(api.contacts.remove);
   const deleteDevice = useMutation(api.devices.remove);
   const deleteAction = useMutation(api.actions.remove);
-  // used by ActionForm's onDelete via confirm dialog
+  const deleteWorklistEntry = useMutation(api.worklist.remove);
 
-  const [tab, setTab] = useState("contacts"); // "contacts" | "devices" | "actions"
+  const [tab, setTab] = useState("contacts"); // "contacts" | "devices" | "actions" | "worklist"
   const [query, setQuery] = useState("");
   const [searchScannerOpen, setSearchScannerOpen] = useState(false);
 
@@ -48,6 +51,9 @@ export default function Souls() {
   const [actionFormOpen, setActionFormOpen] = useState(false);
   const [actionFormId, setActionFormId] = useState(null);
   const [actionFormPresetDevice, setActionFormPresetDevice] = useState(null);
+
+  const [worklistFormOpen, setWorklistFormOpen] = useState(false);
+  const [worklistFormId, setWorklistFormId] = useState(null);
 
   const [confirm, setConfirm] = useState(null); // { kind, id, title, text }
 
@@ -71,6 +77,14 @@ export default function Souls() {
       setDeviceFormId(null);
       setDeviceFormPresetOwner(null);
       setDeviceFormOpen(true);
+    } else if (tab === "worklist") {
+      if (contacts.length === 0) {
+        toast.show(t("toastAddContactFirst"));
+        setTab("contacts");
+        return;
+      }
+      setWorklistFormId(null);
+      setWorklistFormOpen(true);
     } else {
       setActionFormId(null);
       setActionFormPresetDevice(null);
@@ -137,6 +151,17 @@ export default function Souls() {
     });
   };
 
+  const deleteWorklistFromForm = () => {
+    const e = worklist.find((x) => x._id === worklistFormId);
+    if (!e) return;
+    setConfirm({
+      kind: "worklist",
+      id: e._id,
+      title: t("confirmDeleteItem", { name: e.actionType }),
+      text: t("confirmCannotUndo"),
+    });
+  };
+
   const performConfirm = async () => {
     if (!confirm) return;
     try {
@@ -149,6 +174,10 @@ export default function Souls() {
         await deleteDevice({ id: confirm.id });
         setDeviceFormOpen(false);
         toast.show(t("toastDeviceDeleted"));
+      } else if (confirm.kind === "worklist") {
+        await deleteWorklistEntry({ id: confirm.id });
+        setWorklistFormOpen(false);
+        toast.show(t("toastWorklistDeleted"));
       } else {
         await deleteAction({ id: confirm.id });
         setActionFormOpen(false);
@@ -208,6 +237,13 @@ export default function Souls() {
           >
             {t("tabActions")} <span className="tab__count">{actions.length}</span>
           </button>
+          <button
+            className={`tab${tab === "worklist" ? " is-active" : ""}`}
+            onClick={() => handleTab("worklist")}
+            role="tab"
+          >
+            {t("tabWorklist")} <span className="tab__count">{worklist.length}</span>
+          </button>
         </nav>
       </header>
 
@@ -226,7 +262,12 @@ export default function Souls() {
           <input
             className="search__input"
             type="search"
-            placeholder={tab === "contacts" ? t("searchContacts") : tab === "devices" ? t("searchDevices") : t("searchActions")}
+            placeholder={
+              tab === "contacts" ? t("searchContacts") :
+              tab === "devices" ? t("searchDevices") :
+              tab === "worklist" ? t("searchWorklist") :
+              t("searchActions")
+            }
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
@@ -252,7 +293,12 @@ export default function Souls() {
         {tab === "contacts" && <ContactImport />}
         <button className="btn btn--primary" onClick={handleAdd}>
           <span aria-hidden="true">+</span>
-          <span>{tab === "contacts" ? t("addContact") : tab === "devices" ? t("addDevice") : t("addAction")}</span>
+          <span>
+            {tab === "contacts" ? t("addContact") :
+             tab === "devices" ? t("addDevice") :
+             tab === "worklist" ? t("addWorklist") :
+             t("addAction")}
+          </span>
         </button>
       </div>
       </div>{/* end app__top */}
@@ -265,6 +311,13 @@ export default function Souls() {
             actions={actions}
             query={query}
             onOpen={(id) => { setActionFormId(id); setActionFormPresetDevice(null); setActionFormOpen(true); }}
+          />
+        )}
+        {tab === "worklist" && (
+          <WorklistList
+            worklist={worklist}
+            query={query}
+            onOpen={(id) => { setWorklistFormId(id); setWorklistFormOpen(true); }}
           />
         )}
       </main>
@@ -322,6 +375,16 @@ export default function Souls() {
         devices={devices}
         onClose={() => setActionFormOpen(false)}
         onDelete={deleteActionFromForm}
+      />
+
+      <WorklistForm
+        open={worklistFormOpen}
+        entryId={worklistFormId}
+        worklist={worklist}
+        contacts={contacts}
+        devices={devices}
+        onClose={() => setWorklistFormOpen(false)}
+        onDelete={deleteWorklistFromForm}
       />
 
       <ConfirmDialog

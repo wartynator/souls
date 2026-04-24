@@ -37,9 +37,6 @@ export const list = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    // Attach device count for each contact (cheap for small lists; fine for a
-    // personal contacts app. If this ever becomes a bottleneck, we can add a
-    // denormalized counter on the contact row.)
     return Promise.all(
       contacts.map(async (c) => {
         const devices = await ctx.db
@@ -68,6 +65,9 @@ export const get = query({
 export const create = mutation({
   args: {
     name: v.string(),
+    surname: v.optional(v.string()),
+    address: v.optional(v.string()),
+    city: v.optional(v.string()),
     phone: v.optional(v.string()),
     email: v.optional(v.string()),
     notes: v.optional(v.string()),
@@ -80,6 +80,9 @@ export const create = mutation({
     return ctx.db.insert("contacts", {
       userId,
       name,
+      surname: args.surname?.trim() || undefined,
+      address: args.address?.trim() || undefined,
+      city: args.city?.trim() || undefined,
       phone: args.phone?.trim() || undefined,
       email: args.email?.trim() || undefined,
       notes: args.notes?.trim() || undefined,
@@ -91,6 +94,9 @@ export const update = mutation({
   args: {
     id: v.id("contacts"),
     name: v.string(),
+    surname: v.optional(v.string()),
+    address: v.optional(v.string()),
+    city: v.optional(v.string()),
     phone: v.optional(v.string()),
     email: v.optional(v.string()),
     notes: v.optional(v.string()),
@@ -104,6 +110,9 @@ export const update = mutation({
 
     await ctx.db.patch(args.id, {
       name,
+      surname: args.surname?.trim() || undefined,
+      address: args.address?.trim() || undefined,
+      city: args.city?.trim() || undefined,
       phone: args.phone?.trim() || undefined,
       email: args.email?.trim() || undefined,
       notes: args.notes?.trim() || undefined,
@@ -144,13 +153,20 @@ export const remove = mutation({
     const userId = await requireUser(ctx);
     await ownedContact(ctx, userId, args.id);
 
-    // Cascade: delete linked devices first
+    // Cascade: delete linked devices and their actions
     const devices = await ctx.db
       .query("devices")
       .withIndex("by_contact", (q) => q.eq("contactId", args.id))
       .collect();
-
     await Promise.all(devices.map((d) => ctx.db.delete(d._id)));
+
+    // Cascade: delete linked worklist entries
+    const worklistEntries = await ctx.db
+      .query("worklist")
+      .withIndex("by_contact", (q) => q.eq("contactId", args.id))
+      .collect();
+    await Promise.all(worklistEntries.map((e) => ctx.db.delete(e._id)));
+
     await ctx.db.delete(args.id);
   },
 });

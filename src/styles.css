@@ -502,6 +502,17 @@ a:hover { text-decoration: underline; }
   flex-direction: column;
   gap: 6px;
 }
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.field__hint {
+  font-size: 13px;
+  color: var(--ink-mute);
+  font-style: italic;
+  margin: 0;
+}
 .field__label {
   font-size: 12px;
   color: var(--ink-mute);
@@ -715,6 +726,7 @@ select.field__input {
 @media (max-width: 560px) {
   .app__top { padding: 28px 16px 0; }
   .main { padding: 0 16px 40px; }
+  .field-row { grid-template-columns: 1fr; }
   .header__title { font-size: 36px; }
   .header__top { flex-direction: column; gap: 8px; margin-bottom: 20px; }
   .header { padding-bottom: 20px; margin-bottom: 16px; }

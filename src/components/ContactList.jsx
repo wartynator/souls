@@ -1,15 +1,20 @@
 import { useMemo } from "react";
 import { useLocale } from "../i18n.jsx";
 
-function initials(name = "") {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0][0].toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+function initials(contact) {
+  const first = (contact.name || "").trim()[0] || "";
+  const last = (contact.surname || "").trim()[0] || "";
+  if (first && last) return (first + last).toUpperCase();
+  if (first) return first.toUpperCase();
+  return "?";
 }
 
-function firstLetter(name = "") {
-  const c = (name.trim()[0] || "#").toUpperCase();
+function sortKey(contact) {
+  return ((contact.surname || contact.name || "").trim()).toLowerCase();
+}
+
+function firstLetter(contact) {
+  const c = ((contact.surname || contact.name || "").trim()[0] || "#").toUpperCase();
   return /[A-Z]/.test(c) ? c : "#";
 }
 
@@ -20,7 +25,7 @@ export default function ContactList({ contacts, query, onOpen }) {
     let list = contacts;
     if (q) {
       list = list.filter((c) => {
-        const hay = [c.name, c.phone, c.email, c.notes]
+        const hay = [c.name, c.surname, c.phone, c.email, c.address, c.city, c.notes]
           .filter(Boolean)
           .join(" ")
           .toLowerCase();
@@ -28,13 +33,13 @@ export default function ContactList({ contacts, query, onOpen }) {
       });
     }
     list = [...list].sort((a, b) =>
-      (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" }),
+      sortKey(a).localeCompare(sortKey(b), undefined, { sensitivity: "base" }),
     );
 
     const groups = [];
     let lastLetter = null;
     list.forEach((c) => {
-      const letter = firstLetter(c.name);
+      const letter = firstLetter(c);
       if (letter !== lastLetter) {
         groups.push({ type: "letter", letter });
         lastLetter = letter;
@@ -44,7 +49,6 @@ export default function ContactList({ contacts, query, onOpen }) {
     return { grouped: groups, filteredCount: list.length };
   }, [contacts, query]);
 
-  // Empty states
   if (contacts.length === 0) {
     return (
       <div className="empty">
@@ -77,9 +81,12 @@ export default function ContactList({ contacts, query, onOpen }) {
             className="row"
             onClick={() => onOpen(item.contact._id)}
           >
-            <div className="row__avatar">{initials(item.contact.name)}</div>
+            <div className="row__avatar">{initials(item.contact)}</div>
             <div className="row__main">
-              <p className="row__name">{item.contact.name || t("contactUnnamed")}</p>
+              <p className="row__name">
+                {[item.contact.name, item.contact.surname].filter(Boolean).join(" ") ||
+                  t("contactUnnamed")}
+              </p>
               {(item.contact.phone || item.contact.email) && (
                 <p className="row__sub">
                   {item.contact.phone || item.contact.email}

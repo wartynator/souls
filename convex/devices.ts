@@ -48,14 +48,14 @@ export const list = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    // Attach owner name for display
+    // Attach owner full name for display
     return Promise.all(
       devices.map(async (d) => {
         const owner = await ctx.db.get(d.contactId);
-        return {
-          ...d,
-          ownerName: owner?.name ?? null,
-        };
+        const ownerName = owner
+          ? [owner.name, owner.surname].filter(Boolean).join(" ")
+          : null;
+        return { ...d, ownerName };
       }),
     );
   },
@@ -145,6 +145,14 @@ export const remove = mutation({
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
     await ownedDevice(ctx, userId, args.id);
+
+    // Cascade: delete linked worklist entries
+    const worklistEntries = await ctx.db
+      .query("worklist")
+      .withIndex("by_device", (q) => q.eq("deviceId", args.id))
+      .collect();
+    await Promise.all(worklistEntries.map((e) => ctx.db.delete(e._id)));
+
     await ctx.db.delete(args.id);
   },
 });
