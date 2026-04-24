@@ -133,6 +133,12 @@ a:hover { text-decoration: underline; }
   margin-bottom: 20px;
   align-items: center;
 }
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
 .search {
   position: relative;
   flex: 1;
@@ -157,25 +163,6 @@ a:hover { text-decoration: underline; }
 }
 .search__input:focus { outline: none; border-color: var(--ink); }
 .search__input::placeholder { color: var(--ink-mute); }
-.search__input--scannable { padding-right: 40px; }
-
-.search__scan-btn {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ink-mute);
-  border-radius: var(--radius-sm);
-  transition: color .12s ease, background .12s ease;
-  padding: 0;
-}
-.search__scan-btn:hover { color: var(--ink); background: var(--bg-soft); }
 
 /* ---------- Lists ---------- */
 .panel { display: none; }
@@ -334,6 +321,15 @@ a:hover { text-decoration: underline; }
 .btn--small {
   padding: 6px 12px;
   font-size: 13px;
+}
+.btn--icon {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Style the #confirmOk button — it needs to look like a danger primary */
@@ -725,7 +721,8 @@ select.field__input {
 
   /* Toolbar */
   .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
-  .toolbar .btn { justify-content: center; padding: 12px 16px; }
+  .toolbar .btn:not(.btn--icon) { justify-content: center; padding: 12px 16px; }
+  .toolbar .search-row { align-items: center; }
 
   /* Touch targets — rows should be at least 44 px tall */
   .row { padding: 12px 8px; min-height: 44px; }
