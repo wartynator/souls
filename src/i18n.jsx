@@ -105,6 +105,7 @@ const en = {
   deviceFormEdit: "Edit device",
   fieldDeviceName: "Device name",
   fieldOwner: "Owner",
+  fieldOwnerSearch: "Search contacts…",
   fieldDeviceNamePlaceholder: "e.g. work laptop, home router",
   fieldNotesPlaceholder:
     "Model, serial number, firmware, or anything you want to remember",
@@ -245,6 +246,7 @@ const sk = {
   deviceFormEdit: "Upraviť zariadenie",
   fieldDeviceName: "Názov zariadenia",
   fieldOwner: "Vlastník",
+  fieldOwnerSearch: "Hľadať kontakty…",
   fieldDeviceNamePlaceholder: "napr. pracovný notebook, domáci router",
   fieldNotesPlaceholder:
     "Model, sériové číslo, firmware alebo čokoľvek, čo chcete zapamätať",
