@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import Dialog from "./Dialog.jsx";
 import { useToast } from "./Toast.jsx";
 import { useLocale } from "../i18n.jsx";
 import BarcodeScanner from "./BarcodeScanner.jsx";
-import DeviceActionForm from "./DeviceActionForm.jsx";
 
 export default function DeviceForm({
   open,
@@ -13,22 +12,14 @@ export default function DeviceForm({
   presetOwnerId,
   devices,
   contacts,
-  actions,
   onClose,
   onDelete,
+  onAddWorklist,
 }) {
   const toast = useToast();
   const { t } = useLocale();
   const createDevice = useMutation(api.devices.create);
   const updateDevice = useMutation(api.devices.update);
-  const removeDeviceAction = useMutation(api.deviceActions.remove);
-
-  const deviceActions = useQuery(
-    api.deviceActions.listByDevice,
-    deviceId ? { deviceId } : "skip",
-  ) ?? [];
-
-  const [addActionOpen, setAddActionOpen] = useState(false);
 
   const editing = deviceId ? devices.find((d) => d._id === deviceId) ?? null : null;
 
@@ -192,14 +183,6 @@ export default function DeviceForm({
         onClose={() => setScannerOpen(false)}
       />
     )}
-    {addActionOpen && (
-      <DeviceActionForm
-        open
-        deviceId={deviceId}
-        actions={actions}
-        onClose={() => setAddActionOpen(false)}
-      />
-    )}
     <Dialog open={open} onClose={onClose}>
       <form className="dialog__form" onSubmit={handleSubmit}>
         <header className="dialog__head">
@@ -306,59 +289,6 @@ export default function DeviceForm({
               </button>
             </div>
           </label>
-          {deviceId && (
-            <div className="field">
-              <div className="service-history__head">
-                <span className="field__label">{t("serviceHistory")}</span>
-                {actions.length > 0 && (
-                  <button
-                    type="button"
-                    className="btn btn--ghost btn--small"
-                    onClick={() => setAddActionOpen(true)}
-                  >
-                    + {t("serviceHistoryAdd")}
-                  </button>
-                )}
-              </div>
-              {deviceActions.length === 0 ? (
-                <p className="service-history__empty">{t("serviceHistoryEmpty")}</p>
-              ) : (
-                <div className="service-history__list">
-                  {[...deviceActions]
-                    .sort((a, b) => b.date.localeCompare(a.date))
-                    .map((da) => (
-                      <div key={da._id} className="service-history__row">
-                        <div className="service-history__info">
-                          <p className="service-history__name">{da.actionName ?? "—"}</p>
-                          <p className="service-history__meta">
-                            {da.date.split("-").reverse().join(".")}
-                            {da.notes && ` · ${da.notes}`}
-                          </p>
-                        </div>
-                        <div className="service-history__right">
-                          {da.actionPrice != null && (
-                            <span className="service-history__price">
-                              {da.actionPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            </span>
-                          )}
-                          <button
-                            type="button"
-                            className="service-history__remove"
-                            onClick={() => removeDeviceAction({ id: da._id })}
-                            aria-label={t("btnDelete")}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                </div>
-              )}
-              {actions.length === 0 && (
-                <p className="service-history__hint">{t("serviceHistoryNoActions")}</p>
-              )}
-            </div>
-          )}
         </div>
         <footer className="dialog__foot">
           {editing ? (
@@ -373,6 +303,15 @@ export default function DeviceForm({
             <span />
           )}
           <div className="dialog__foot-end">
+            {editing && onAddWorklist && (
+              <button
+                type="button"
+                className="btn btn--ghost"
+                onClick={() => onAddWorklist(editing._id, editing.contactId)}
+              >
+                {t("deviceLogWork")}
+              </button>
+            )}
             <button type="button" className="btn btn--ghost" onClick={onClose}>
               {t("btnCancel")}
             </button>
