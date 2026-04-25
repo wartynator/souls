@@ -158,7 +158,6 @@ export default function Souls() {
   };
 
   const addWorklistForDevice = (deviceId, contactId) => {
-    setDeviceFormOpen(false);
     setWorklistFormId(null);
     setWorklistFormPresetContact(contactId);
     setWorklistFormPresetDevice(deviceId);
@@ -499,7 +498,7 @@ export default function Souls() {
         presetDeviceId={worklistFormPresetDevice}
         onClose={() => setWorklistFormOpen(false)}
         onDelete={deleteWorklistFromForm}
-        onPrint={() => setReportEntryId(worklistFormId)}
+        onPrint={() => { setWorklistFormOpen(false); setReportEntryId(worklistFormId); }}
       />
 
       <ConfirmDialog
