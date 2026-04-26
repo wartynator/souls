@@ -224,10 +224,13 @@ export default function ContactImport({ onDone }) {
               </div>
             </div>
             <footer className="dialog__foot">
-              <button type="button" className="btn btn--ghost" onClick={() => setPreview(null)}>{t("btnCancel")}</button>
-              <button type="button" className="btn btn--primary" onClick={handleImport} disabled={saving}>
-                {saving ? t("btnSaving") : t("importBtn", { n: preview.contacts.length })}
-              </button>
+              <span />
+              <div className="dialog__foot-end">
+                <button type="button" className="btn btn--ghost" onClick={() => setPreview(null)}>{t("btnCancel")}</button>
+                <button type="button" className="btn btn--primary" onClick={handleImport} disabled={saving}>
+                  {saving ? t("btnSaving") : t("importBtn", { n: preview.contacts.length })}
+                </button>
+              </div>
             </footer>
           </div>
         </Dialog>

@@ -1212,6 +1212,7 @@ select.field__input {
   .dialog__body { padding: 16px 20px; }
   .dialog__head { padding: 14px 20px 12px; }
   .dialog__title { font-size: 22px; }
+  .dialog__foot { padding-bottom: max(16px, env(safe-area-inset-bottom)); }
   /* Slide-up instead of fade+scale */
   .dialog[open] { animation: sheetIn .25s ease; }
 }
