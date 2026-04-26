@@ -226,9 +226,34 @@ export default function ContactImport({ onDone }) {
             <footer className="dialog__foot">
               <span />
               <div className="dialog__foot-end">
-                <button type="button" className="btn btn--ghost" onClick={() => setPreview(null)}>{t("btnCancel")}</button>
-                <button type="button" className="btn btn--primary" onClick={handleImport} disabled={saving}>
-                  {saving ? t("btnSaving") : t("importBtn", { n: preview.contacts.length })}
+                <button
+                  type="button"
+                  className="dialog__action-btn"
+                  onClick={() => setPreview(null)}
+                  aria-label={t("btnCancel")}
+                  title={t("btnCancel")}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/>
+                  </svg>
+                </button>
+                <button
+                  type="button"
+                  className="dialog__action-btn dialog__action-btn--confirm"
+                  onClick={handleImport}
+                  disabled={saving}
+                  aria-label={t("importBtn", { n: preview.contacts.length })}
+                  title={t("importBtn", { n: preview.contacts.length })}
+                >
+                  {saving ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ opacity: 0.5 }}>
+                      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" strokeDasharray="28 56" strokeLinecap="round"/>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M20 6 9 17l-5-5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
                 </button>
               </div>
             </footer>

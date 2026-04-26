@@ -529,6 +529,8 @@ a:hover { text-decoration: underline; }
   transition: all .12s ease;
 }
 .dialog__action-btn:hover { background: var(--bg-soft); color: var(--ink); }
+.dialog__action-btn--confirm { color: var(--ink); }
+.dialog__action-btn--confirm:hover { background: var(--bg-soft); }
 
 .dialog__close {
   width: 32px;
