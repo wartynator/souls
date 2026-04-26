@@ -80,7 +80,10 @@ export default function WorklistReport({ open, entry, contact, device, action, o
           </div>
           <dl className="report__body">
             <Row label={t("fieldDeviceName")} value={device.name} />
-            <Row label={t("fieldBarcode")} value={device.barcode} />
+            <Row label={t("fieldManufacturer")} value={device.manufacturer} />
+            <Row label={t("fieldDeviceType")} value={device.type} />
+            <Row label={t("fieldYear")} value={device.year} />
+            <Row label={t("fieldSerialNumber")} value={device.serialNumber || device.barcode} />
             <Row label={t("fieldNotes")} value={device.notes} />
           </dl>
         </section>

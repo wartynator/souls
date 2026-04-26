@@ -95,8 +95,11 @@ export const create = mutation({
   args: {
     contactId: v.id("contacts"),
     name: v.string(),
+    manufacturer: v.optional(v.string()),
+    type: v.optional(v.string()),
+    year: v.optional(v.string()),
+    serialNumber: v.optional(v.string()),
     notes: v.optional(v.string()),
-    barcode: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
@@ -109,8 +112,11 @@ export const create = mutation({
       userId,
       contactId: args.contactId,
       name,
+      manufacturer: args.manufacturer?.trim() || undefined,
+      type: args.type?.trim() || undefined,
+      year: args.year?.trim() || undefined,
+      serialNumber: args.serialNumber?.trim() || undefined,
       notes: args.notes?.trim() || undefined,
-      barcode: args.barcode?.trim() || undefined,
     });
   },
 });
@@ -120,8 +126,11 @@ export const update = mutation({
     id: v.id("devices"),
     contactId: v.id("contacts"),
     name: v.string(),
+    manufacturer: v.optional(v.string()),
+    type: v.optional(v.string()),
+    year: v.optional(v.string()),
+    serialNumber: v.optional(v.string()),
     notes: v.optional(v.string()),
-    barcode: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
@@ -134,8 +143,11 @@ export const update = mutation({
     await ctx.db.patch(args.id, {
       contactId: args.contactId,
       name,
+      manufacturer: args.manufacturer?.trim() || undefined,
+      type: args.type?.trim() || undefined,
+      year: args.year?.trim() || undefined,
+      serialNumber: args.serialNumber?.trim() || undefined,
       notes: args.notes?.trim() || undefined,
-      barcode: args.barcode?.trim() || undefined,
     });
   },
 });
