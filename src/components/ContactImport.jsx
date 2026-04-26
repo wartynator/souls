@@ -40,57 +40,61 @@ function parseCSV(text) {
 
 function mapGoogleCSV(rows) {
   if (rows.length < 2) return [];
-  const headers = rows[0].map((h) => h.trim().replace(/^\uFEFF/, ""));
+  // Strip BOM and normalize headers to lowercase for matching
+  const headers = rows[0].map((h) => h.trim().replace(/^﻿/, ""));
   const normalizedHeaders = headers.map((h) => h.toLowerCase());
 
+  // Exact lowercase match
   const col = (names) => normalizedHeaders.findIndex((h) => names.includes(h));
+  // Regex match returning all matching column indices (for multi-value fields like phones)
   const cols = (regexes) =>
     normalizedHeaders
       .map((h, idx) => ({ h, idx }))
       .filter(({ h }) => regexes.some((re) => re.test(h)))
       .map(({ idx }) => idx);
 
-  const firstNameIdx = col(["first name", "given name"]);
+  const firstNameIdx  = col(["first name", "given name"]);
   const middleNameIdx = col(["middle name", "additional name"]);
-  const lastNameIdx = col(["last name", "family name", "surname"]);
-  const fullNameIdx = col(["name"]);
-  const notesIdx = col(["notes"]);
-  const cityIdx = col(["address 1 - city", "city"]);
-  const streetIdx = col(["address 1 - street", "address", "street"]);
+  const lastNameIdx   = col(["last name", "family name", "surname"]);
+  const fullNameIdx   = col(["name"]);
+  const notesIdx      = col(["notes"]);
+  const cityIdx       = col(["address 1 - city", "city"]);
+  // Prefer formatted address; fall back to street
+  const addressIdx    = col(["address 1 - formatted", "address 1 - street", "address", "street"]);
 
-  const phoneIdxs = cols([/^phone \d+ - value$/, /^phone$/]);
+  const phoneIdxs = cols([/^phone \d+ - value$/, /^phone$/, /^mobile$/]);
   const emailIdxs = cols([/^email \d+ - value$/, /^e-mail \d+ - value$/, /^email$/, /^e-mail$/]);
+
+  const firstValue = (idxs, r) => {
+    for (const idx of idxs) {
+      const value = r[idx]?.trim();
+      if (value) return value;
+    }
+    return undefined;
+  };
 
   const contacts = [];
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
     if (!r.length || r.every((c) => !c.trim())) continue;
 
-    const firstName = firstNameIdx >= 0 ? r[firstNameIdx]?.trim() || "" : "";
+    const firstName  = firstNameIdx  >= 0 ? r[firstNameIdx]?.trim()  || "" : "";
     const middleName = middleNameIdx >= 0 ? r[middleNameIdx]?.trim() || "" : "";
-    const lastName = lastNameIdx >= 0 ? r[lastNameIdx]?.trim() || "" : "";
-    const fullName = fullNameIdx >= 0 ? r[fullNameIdx]?.trim() || "" : "";
+    const lastName   = lastNameIdx   >= 0 ? r[lastNameIdx]?.trim()   || "" : "";
+    const fullName   = fullNameIdx   >= 0 ? r[fullNameIdx]?.trim()   || "" : "";
 
     const composedName = [firstName, middleName].filter(Boolean).join(" ").trim();
-    const name = composedName || firstName || fullName || (lastName ? `${lastName}` : "");
+    const name = composedName || firstName || fullName || (lastName ? lastName : "");
     if (!name) continue;
-
-    const firstValue = (idxs) => {
-      for (const idx of idxs) {
-        const value = r[idx]?.trim();
-        if (value) return value;
-      }
-      return undefined;
-    };
 
     contacts.push({
       name,
-      surname: lastName || undefined,
-      address: streetIdx >= 0 ? r[streetIdx]?.trim() || undefined : undefined,
-      city: cityIdx >= 0 ? r[cityIdx]?.trim() || undefined : undefined,
-      phone: firstValue(phoneIdxs),
-      email: firstValue(emailIdxs),
-      notes: notesIdx >= 0 ? r[notesIdx]?.trim() || undefined : undefined,
+      surname: lastName   || undefined,
+      address: addressIdx >= 0 ? r[addressIdx]?.trim() || undefined : undefined,
+      city:    cityIdx    >= 0 ? r[cityIdx]?.trim()    || undefined : undefined,
+      phone:   firstValue(phoneIdxs, r),
+      email:   firstValue(emailIdxs, r),
+      notes:   notesIdx   >= 0 ? r[notesIdx]?.trim()   || undefined : undefined,
     });
   }
   return contacts;
@@ -204,10 +208,15 @@ export default function ContactImport({ onDone }) {
               <div className="import__list">
                 {preview.contacts.map((c, i) => (
                   <div key={i} className="import__row">
-                    <p className="import__name">{c.name}</p>
+                    <p className="import__name">{[c.name, c.surname].filter(Boolean).join(" ")}</p>
                     {(c.phone || c.email) && (
                       <p className="import__meta">
                         {[c.phone, c.email].filter(Boolean).join(" · ")}
+                      </p>
+                    )}
+                    {(c.address || c.city) && (
+                      <p className="import__meta">
+                        {[c.address, c.city].filter(Boolean).join(", ")}
                       </p>
                     )}
                   </div>
