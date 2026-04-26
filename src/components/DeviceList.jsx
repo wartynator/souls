@@ -9,7 +9,7 @@ export default function DeviceList({ devices, query, onOpen }) {
     let list = devices;
     if (q) {
       list = list.filter((d) => {
-        const hay = [d.name, d.notes, d.ownerName, d.barcode].filter(Boolean).join(" ").toLowerCase();
+        const hay = [d.name, d.manufacturer, d.type, d.notes, d.ownerName, d.serialNumber, d.barcode].filter(Boolean).join(" ").toLowerCase();
         return hay.includes(q);
       });
     }
@@ -54,10 +54,10 @@ export default function DeviceList({ devices, query, onOpen }) {
               ) : (
                 <em style={{ color: "var(--ink-faint)" }}>{t("deviceOwnerRemoved")}</em>
               )}
-              {d.notes && ` · ${d.notes}`}
+              {(d.manufacturer || d.type) && ` · ${[d.manufacturer, d.type].filter(Boolean).join(" ")}`}
             </p>
-            {d.barcode && (
-              <p className="row__barcode">{d.barcode}</p>
+            {(d.serialNumber || d.barcode) && (
+              <p className="row__barcode">{d.serialNumber || d.barcode}</p>
             )}
           </div>
           <svg

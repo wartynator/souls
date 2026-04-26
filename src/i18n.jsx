@@ -144,10 +144,19 @@ const en = {
   // device list
   deviceUnnamed: "Unnamed device",
   deviceOwnerRemoved: "Owner removed",
-  // barcode
-  searchByBarcode: "Search by barcode",
-  fieldBarcode: "Barcode",
-  fieldBarcodePlaceholder: "Scan or enter barcode",
+  // device fields
+  fieldManufacturer: "Manufacturer",
+  fieldManufacturerPlaceholder: "e.g. Apple, Samsung, Dell",
+  fieldDeviceType: "Type",
+  fieldDeviceTypePlaceholder: "e.g. Laptop, Phone, Tablet",
+  fieldYear: "Year of manufacture",
+  fieldYearPlaceholder: "e.g. 2022",
+  fieldSerialNumber: "Serial number",
+  fieldSerialNumberPlaceholder: "Scan or enter serial number",
+  // barcode scanner (label kept — scanner reads barcodes to fill serial)
+  searchByBarcode: "Search by serial number",
+  fieldBarcode: "Serial number",
+  fieldBarcodePlaceholder: "Scan or enter serial number",
   scanBarcode: "Scan barcode",
   scannerHint: "Point the camera at a barcode",
   scannerDetected: "Barcode detected",
@@ -349,15 +358,24 @@ const sk = {
   // device list
   deviceUnnamed: "Zariadenie bez názvu",
   deviceOwnerRemoved: "Vlastník bol odstránený",
-  // barcode
-  fieldBarcode: "Čiarový kód",
-  fieldBarcodePlaceholder: "Naskenujte alebo zadajte čiarový kód",
+  // device fields
+  fieldManufacturer: "Výrobca",
+  fieldManufacturerPlaceholder: "napr. Apple, Samsung, Dell",
+  fieldDeviceType: "Typ",
+  fieldDeviceTypePlaceholder: "napr. Laptop, Telefón, Tablet",
+  fieldYear: "Rok výroby",
+  fieldYearPlaceholder: "napr. 2022",
+  fieldSerialNumber: "Sériové číslo",
+  fieldSerialNumberPlaceholder: "Naskenujte alebo zadajte sériové číslo",
+  // barcode scanner
+  searchByBarcode: "Hľadať podľa sériového čísla",
+  fieldBarcode: "Sériové číslo",
+  fieldBarcodePlaceholder: "Naskenujte alebo zadajte sériové číslo",
   scanBarcode: "Skenovať čiarový kód",
   scannerHint: "Namierenou kamerou na čiarový kód",
   scannerDetected: "Čiarový kód naskenovaný",
   scannerRescan: "Skenovať znova",
   scannerUse: "Použiť",
-  searchByBarcode: "Vyhľadať podľa čiarového kódu",
   scannerCameraError:
     "Nepodarilo sa získať prístup ku kamere. Skontrolujte povolenia.",
   // import

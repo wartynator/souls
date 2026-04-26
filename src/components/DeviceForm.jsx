@@ -28,8 +28,11 @@ export default function DeviceForm({
   const [ownerSearch, setOwnerSearch] = useState("");
   const [ownerOpen, setOwnerOpen] = useState(false);
   const [ownerHighlight, setOwnerHighlight] = useState(0);
+  const [manufacturer, setManufacturer] = useState("");
+  const [type, setType] = useState("");
+  const [year, setYear] = useState("");
+  const [serialNumber, setSerialNumber] = useState("");
   const [notes, setNotes] = useState("");
-  const [barcode, setBarcode] = useState("");
   const [scannerOpen, setScannerOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -64,8 +67,11 @@ export default function DeviceForm({
       setOwnerId(editing.contactId);
       const ownerContact = contacts.find((c) => c._id === editing.contactId);
       setOwnerSearch(ownerContact ? contactFullName(ownerContact) : "");
+      setManufacturer(editing.manufacturer || "");
+      setType(editing.type || "");
+      setYear(editing.year || "");
+      setSerialNumber(editing.serialNumber || editing.barcode || "");
       setNotes(editing.notes || "");
-      setBarcode(editing.barcode || "");
     } else {
       setName("");
       const presetContact = presetOwnerId
@@ -73,8 +79,11 @@ export default function DeviceForm({
         : sortedContacts[0];
       setOwnerId(presetContact?._id || "");
       setOwnerSearch(presetContact ? contactFullName(presetContact) : "");
+      setManufacturer("");
+      setType("");
+      setYear("");
+      setSerialNumber("");
       setNotes("");
-      setBarcode("");
     }
     setOwnerOpen(false);
     setOwnerHighlight(0);
@@ -153,16 +162,22 @@ export default function DeviceForm({
           id: editing._id,
           contactId: ownerId,
           name,
+          manufacturer: manufacturer || undefined,
+          type: type || undefined,
+          year: year || undefined,
+          serialNumber: serialNumber || undefined,
           notes: notes || undefined,
-          barcode: barcode || undefined,
         });
         toast.show(t("toastDeviceUpdated"));
       } else {
         await createDevice({
           contactId: ownerId,
           name,
+          manufacturer: manufacturer || undefined,
+          type: type || undefined,
+          year: year || undefined,
+          serialNumber: serialNumber || undefined,
           notes: notes || undefined,
-          barcode: barcode || undefined,
         });
         toast.show(t("toastDeviceAdded"));
       }
@@ -179,7 +194,7 @@ export default function DeviceForm({
     <>
     {scannerOpen && (
       <BarcodeScanner
-        onScan={(value) => { setBarcode(value); setScannerOpen(false); }}
+        onScan={(value) => { setSerialNumber(value); setScannerOpen(false); }}
         onClose={() => setScannerOpen(false)}
       />
     )}
@@ -261,27 +276,53 @@ export default function DeviceForm({
               )}
             </div>
           </label>
+          <div className="field-row">
+            <label className="field">
+              <span className="field__label">{t("fieldManufacturer")}</span>
+              <input
+                className="field__input"
+                type="text"
+                maxLength={100}
+                value={manufacturer}
+                onChange={(e) => setManufacturer(e.target.value)}
+                placeholder={t("fieldManufacturerPlaceholder")}
+              />
+            </label>
+            <label className="field">
+              <span className="field__label">{t("fieldDeviceType")}</span>
+              <input
+                className="field__input"
+                type="text"
+                maxLength={100}
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+                placeholder={t("fieldDeviceTypePlaceholder")}
+              />
+            </label>
+          </div>
           <label className="field">
-            <span className="field__label">{t("fieldNotes")}</span>
-            <textarea
-              className="field__input field__input--area"
-              rows={3}
-              maxLength={500}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={t("fieldNotesPlaceholder")}
+            <span className="field__label">{t("fieldYear")}</span>
+            <input
+              className="field__input"
+              type="number"
+              min={1900}
+              max={new Date().getFullYear() + 1}
+              step={1}
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+              placeholder={t("fieldYearPlaceholder")}
             />
           </label>
           <label className="field">
-            <span className="field__label">{t("fieldBarcode")}</span>
+            <span className="field__label">{t("fieldSerialNumber")}</span>
             <div className="field__input-row">
               <input
                 className="field__input"
                 type="text"
                 maxLength={100}
-                value={barcode}
-                onChange={(e) => setBarcode(e.target.value)}
-                placeholder={t("fieldBarcodePlaceholder")}
+                value={serialNumber}
+                onChange={(e) => setSerialNumber(e.target.value)}
+                placeholder={t("fieldSerialNumberPlaceholder")}
               />
               <button
                 type="button"
@@ -300,6 +341,17 @@ export default function DeviceForm({
                 </svg>
               </button>
             </div>
+          </label>
+          <label className="field">
+            <span className="field__label">{t("fieldNotes")}</span>
+            <textarea
+              className="field__input field__input--area"
+              rows={3}
+              maxLength={500}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder={t("fieldNotesPlaceholder")}
+            />
           </label>
           {editing && (
             <button type="button" className="form-delete-link" onClick={onDelete}>

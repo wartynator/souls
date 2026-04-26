@@ -22,8 +22,12 @@ export default defineSchema({
     userId: v.id("users"),
     contactId: v.id("contacts"),
     name: v.string(),
+    manufacturer: v.optional(v.string()),
+    type: v.optional(v.string()),
+    year: v.optional(v.string()),
+    serialNumber: v.optional(v.string()),
     notes: v.optional(v.string()),
-    barcode: v.optional(v.string()),
+    barcode: v.optional(v.string()), // legacy — kept for existing records
   })
     .index("by_user", ["userId"])
     .index("by_contact", ["contactId"])
