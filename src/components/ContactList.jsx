@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useLocale } from "../i18n.jsx";
+import { avatarColorClass } from "../avatarColor.js";
 
 function initials(contact) {
   const first = (contact.name || "").trim()[0] || "";
@@ -81,7 +82,7 @@ export default function ContactList({ contacts, query, onOpen }) {
             className="row"
             onClick={() => onOpen(item.contact._id)}
           >
-            <div className="row__avatar">{initials(item.contact)}</div>
+            <div className={`row__avatar ${avatarColorClass(item.contact.name + (item.contact.surname || ""))}`}>{initials(item.contact)}</div>
             <div className="row__main">
               <p className="row__name">
                 {[item.contact.name, item.contact.surname].filter(Boolean).join(" ") ||
