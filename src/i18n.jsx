@@ -147,6 +147,9 @@ const en = {
     "Could not access the camera. Please check your permissions.",
   // import
   importContacts: "Import CSV",
+  importFromGoogle: "Import from Google",
+  importGoogleLoading: "Connecting…",
+  importGoogleError: "Could not connect to Google Contacts. Please try again.",
   importDialogTitle: "Import contacts",
   importPreviewCount: "{n} contacts found",
   importBtn: "Import {n}",
@@ -329,6 +332,9 @@ const sk = {
     "Nepodarilo sa získať prístup ku kamere. Skontrolujte povolenia.",
   // import
   importContacts: "Importovať CSV",
+  importFromGoogle: "Importovať z Googlu",
+  importGoogleLoading: "Pripájam…",
+  importGoogleError: "Nepodarilo sa pripojiť ku Google Kontaktom. Skúste znova.",
   importDialogTitle: "Importovať kontakty",
   importPreviewCount: "Nájdených {n} kontaktov",
   importBtn: "Importovať {n}",
