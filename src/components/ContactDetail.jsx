@@ -30,20 +30,28 @@ export default function ContactDetail({
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <div className="dialog__form">
-        <header className="dialog__head">
-          <h2 className="dialog__title">{fullName || t("contactUnnamed")}</h2>
-          <button
-            type="button"
-            className="dialog__close"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            ×
-          </button>
+      <div className="dialog__form contact-detail-sheet">
+        <header className="dialog__head contact-detail-sheet__head">
+          <div className="contact-detail-sheet__title-wrap">
+            <p className="contact-detail-sheet__eyebrow">Contact</p>
+            <h2 className="dialog__title">{fullName || t("contactUnnamed")}</h2>
+          </div>
+          <div className="dialog__head-actions contact-detail-sheet__head-actions">
+            <button type="button" className="btn btn--ghost contact-detail-sheet__edit" onClick={onEdit}>
+              {t("btnEdit")}
+            </button>
+            <button
+              type="button"
+              className="dialog__close"
+              onClick={onClose}
+              aria-label="Close"
+            >
+              ×
+            </button>
+          </div>
         </header>
-        <div className="dialog__body">
-          <dl className="detail">
+        <div className="dialog__body contact-detail-sheet__body">
+          <dl className="detail contact-detail-sheet__detail-card">
             {contact.phone && (
               <div className="detail__row">
                 <dt>{t("detailPhone")}</dt>
@@ -80,7 +88,7 @@ export default function ContactDetail({
             )}
           </dl>
 
-          <div className="devices-section">
+          <div className="devices-section contact-detail-sheet__devices">
             <div className="devices-section__head">
               <h3 className="devices-section__title">{t("detailDevices")}</h3>
               <button
@@ -130,7 +138,7 @@ export default function ContactDetail({
             )}
           </div>
         </div>
-        <footer className="dialog__foot">
+        <footer className="dialog__foot contact-detail-sheet__foot">
           <button type="button" className="btn btn--text btn--danger" onClick={onDelete}>
             {t("detailDeleteContact")}
           </button>
@@ -142,9 +150,6 @@ export default function ContactDetail({
             )}
             <button type="button" className="btn btn--ghost" onClick={onClose}>
               {t("btnClose")}
-            </button>
-            <button type="button" className="btn btn--primary" onClick={onEdit}>
-              {t("btnEdit")}
             </button>
           </div>
         </footer>
