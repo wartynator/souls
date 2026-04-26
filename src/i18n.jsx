@@ -148,6 +148,8 @@ const en = {
   // import
   importContacts: "Import",
   importFromGoogle: "Import from Google",
+  importOptionGoogle: "Google",
+  importOptionCSV: "CSV",
   importGoogleLoading: "Connecting…",
   importGoogleError: "Could not connect to Google Contacts. Please try again.",
   importDialogTitle: "Import contacts",
@@ -333,6 +335,8 @@ const sk = {
   // import
   importContacts: "Importovať",
   importFromGoogle: "Importovať z Googlu",
+  importOptionGoogle: "Google",
+  importOptionCSV: "CSV",
   importGoogleLoading: "Pripájam…",
   importGoogleError: "Nepodarilo sa pripojiť ku Google Kontaktom. Skúste znova.",
   importDialogTitle: "Importovať kontakty",
