@@ -1340,6 +1340,41 @@ select.field__input {
   color: var(--ink-mute);
 }
 
+/* Import source dropdown */
+.import-menu {
+  position: relative;
+  display: inline-flex;
+}
+.import-menu__dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 200px;
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  z-index: 200;
+  overflow: hidden;
+}
+.import-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background .1s;
+}
+.import-menu__item:hover { background: var(--bg-soft); }
+.import-menu__item:disabled { opacity: .5; cursor: not-allowed; }
+.import-menu__item + .import-menu__item { border-top: 1px solid var(--rule); }
+
 /* ---------- Focus ---------- */
 :focus-visible {
   outline: 2px solid var(--ink);
