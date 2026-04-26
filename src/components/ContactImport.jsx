@@ -168,15 +168,40 @@ async function fetchAllConnections(accessToken) {
   return connections;
 }
 
+// ── Duplicate detection ───────────────────────────────────────────────────────
+
+function normalizePhone(phone) {
+  if (!phone) return null;
+  const digits = phone.replace(/\D/g, "");
+  return digits.length >= 7 ? digits.slice(-9) : null;
+}
+
+function detectDuplicates(incoming, existing) {
+  return incoming.map((c) => {
+    const inPhone = normalizePhone(c.phone);
+    const inEmail = c.email?.toLowerCase().trim() || null;
+    const inName = [c.name, c.surname].filter(Boolean).join(" ").toLowerCase();
+
+    return existing.some((ex) => {
+      if (inPhone && normalizePhone(ex.phone) === inPhone) return true;
+      if (inEmail && ex.email?.toLowerCase().trim() === inEmail) return true;
+      const exName = [ex.name, ex.surname].filter(Boolean).join(" ").toLowerCase();
+      if (inName && exName && exName === inName) return true;
+      return false;
+    });
+  });
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export default function ContactImport({ onDone }) {
+export default function ContactImport({ onDone, existingContacts = [] }) {
   const { t } = useLocale();
   const toast = useToast();
   const fileRef = useRef(null);
   const bulkCreate = useMutation(api.contacts.bulkCreate);
 
-  const [preview, setPreview] = useState(null); // null | { contacts }
+  const [preview, setPreview] = useState(null); // null | { contacts, dupeFlags }
+  const [selected, setSelected] = useState(new Set());
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -206,7 +231,10 @@ export default function ContactImport({ onDone }) {
           setError(t("importNoContacts"));
           return;
         }
-        setPreview({ contacts });
+        const dupeFlags = detectDuplicates(contacts, existingContacts);
+        const initialSelected = new Set(contacts.map((_, i) => i).filter((i) => !dupeFlags[i]));
+        setPreview({ contacts, dupeFlags });
+        setSelected(initialSelected);
       } catch {
         setError(t("importInvalidFile"));
       }
@@ -246,7 +274,10 @@ export default function ContactImport({ onDone }) {
         setError(t("importNoContacts"));
         return;
       }
-      setPreview({ contacts });
+      const dupeFlags = detectDuplicates(contacts, existingContacts);
+      const initialSelected = new Set(contacts.map((_, i) => i).filter((i) => !dupeFlags[i]));
+      setPreview({ contacts, dupeFlags });
+      setSelected(initialSelected);
     } catch (err) {
       console.error("Google import error:", err);
       setError(t("importGoogleError"));
@@ -255,12 +286,22 @@ export default function ContactImport({ onDone }) {
     }
   };
 
+  const toggleSelected = (i) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i);
+      else next.add(i);
+      return next;
+    });
+  };
+
   const handleImport = async () => {
-    if (!preview) return;
+    if (!preview || selected.size === 0) return;
+    const toImport = preview.contacts.filter((_, i) => selected.has(i));
     setSaving(true);
     try {
-      await bulkCreate({ contacts: preview.contacts });
-      toast.show(t("importSuccess", { n: preview.contacts.length }));
+      await bulkCreate({ contacts: toImport });
+      toast.show(t("importSuccess", { n: toImport.length }));
       setPreview(null);
       onDone?.();
     } catch {
@@ -367,22 +408,38 @@ export default function ContactImport({ onDone }) {
             <div className="dialog__body">
               <p className="import__count">
                 {t("importPreviewCount", { n: preview.contacts.length })}
+                {selected.size !== preview.contacts.length && (
+                  <> · {t("importSelectedCount", { n: selected.size })}</>
+                )}
               </p>
               <div className="import__list">
                 {preview.contacts.map((c, i) => (
-                  <div key={i} className="import__row">
-                    <p className="import__name">{[c.name, c.surname].filter(Boolean).join(" ")}</p>
-                    {(c.phone || c.email) && (
-                      <p className="import__meta">
-                        {[c.phone, c.email].filter(Boolean).join(" · ")}
-                      </p>
-                    )}
-                    {(c.address || c.city) && (
-                      <p className="import__meta">
-                        {[c.address, c.city].filter(Boolean).join(", ")}
-                      </p>
-                    )}
-                  </div>
+                  <label key={i} className="import__row">
+                    <input
+                      type="checkbox"
+                      className="import__check"
+                      checked={selected.has(i)}
+                      onChange={() => toggleSelected(i)}
+                    />
+                    <div className="import__row-body">
+                      <div className="import__row-head">
+                        <p className="import__name">{[c.name, c.surname].filter(Boolean).join(" ")}</p>
+                        {preview.dupeFlags[i] && (
+                          <span className="import__dupe-badge">{t("importDuplicate")}</span>
+                        )}
+                      </div>
+                      {(c.phone || c.email) && (
+                        <p className="import__meta">
+                          {[c.phone, c.email].filter(Boolean).join(" · ")}
+                        </p>
+                      )}
+                      {(c.address || c.city) && (
+                        <p className="import__meta">
+                          {[c.address, c.city].filter(Boolean).join(", ")}
+                        </p>
+                      )}
+                    </div>
+                  </label>
                 ))}
               </div>
             </div>
@@ -404,9 +461,9 @@ export default function ContactImport({ onDone }) {
                   type="button"
                   className="dialog__action-btn dialog__action-btn--confirm"
                   onClick={handleImport}
-                  disabled={saving}
-                  aria-label={t("importBtn", { n: preview.contacts.length })}
-                  title={t("importBtn", { n: preview.contacts.length })}
+                  disabled={saving || selected.size === 0}
+                  aria-label={t("importBtn", { n: selected.size })}
+                  title={t("importBtn", { n: selected.size })}
                 >
                   {saving ? (
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ opacity: 0.5 }}>

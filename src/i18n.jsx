@@ -168,6 +168,8 @@ const en = {
   importSuccess: "Imported {n} contacts",
   importNoContacts: "No contacts found in this file. Make sure it is a Google Contacts CSV export.",
   importInvalidFile: "Could not read the file. Please export as CSV from Google Contacts.",
+  importDuplicate: "Possible duplicate",
+  importSelectedCount: "{n} selected",
   // worklist status
   statusPending: "Pending",
   statusInProgress: "In Progress",
@@ -371,6 +373,8 @@ const sk = {
   importSuccess: "Importovaných {n} kontaktov",
   importNoContacts: "V súbore sa nenašli žiadne kontakty. Uistite sa, že ide o export z Google Kontaktov vo formáte CSV.",
   importInvalidFile: "Súbor sa nepodarilo načítať. Exportujte kontakty ako CSV z Google Kontaktov.",
+  importDuplicate: "Možný duplikát",
+  importSelectedCount: "{n} vybraných",
   // worklist status
   statusPending: "Čaká",
   statusInProgress: "Prebieha",
