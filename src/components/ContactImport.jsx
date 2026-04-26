@@ -40,31 +40,56 @@ function parseCSV(text) {
 
 function mapGoogleCSV(rows) {
   if (rows.length < 2) return [];
-  const headers = rows[0].map((h) => h.trim());
+  const headers = rows[0].map((h) => h.trim().replace(/^\uFEFF/, ""));
+  const normalizedHeaders = headers.map((h) => h.toLowerCase());
 
-  const col = (patterns) => {
-    for (const p of patterns) {
-      const idx = headers.findIndex((h) => h.toLowerCase().includes(p.toLowerCase()));
-      if (idx !== -1) return idx;
-    }
-    return -1;
-  };
+  const col = (names) => normalizedHeaders.findIndex((h) => names.includes(h));
+  const cols = (regexes) =>
+    normalizedHeaders
+      .map((h, idx) => ({ h, idx }))
+      .filter(({ h }) => regexes.some((re) => re.test(h)))
+      .map(({ idx }) => idx);
 
-  const nameIdx  = col(["Name"]);
-  const phoneIdx = col(["Phone 1 - Value", "Phone", "Mobile"]);
-  const emailIdx = col(["E-mail 1 - Value", "Email 1 - Value", "Email"]);
-  const notesIdx = col(["Notes"]);
+  const firstNameIdx = col(["first name", "given name"]);
+  const middleNameIdx = col(["middle name", "additional name"]);
+  const lastNameIdx = col(["last name", "family name", "surname"]);
+  const fullNameIdx = col(["name"]);
+  const notesIdx = col(["notes"]);
+  const cityIdx = col(["address 1 - city", "city"]);
+  const streetIdx = col(["address 1 - street", "address", "street"]);
+
+  const phoneIdxs = cols([/^phone \d+ - value$/, /^phone$/]);
+  const emailIdxs = cols([/^email \d+ - value$/, /^e-mail \d+ - value$/, /^email$/, /^e-mail$/]);
 
   const contacts = [];
   for (let i = 1; i < rows.length; i++) {
     const r = rows[i];
     if (!r.length || r.every((c) => !c.trim())) continue;
-    const name = nameIdx >= 0 ? r[nameIdx]?.trim() : "";
+
+    const firstName = firstNameIdx >= 0 ? r[firstNameIdx]?.trim() || "" : "";
+    const middleName = middleNameIdx >= 0 ? r[middleNameIdx]?.trim() || "" : "";
+    const lastName = lastNameIdx >= 0 ? r[lastNameIdx]?.trim() || "" : "";
+    const fullName = fullNameIdx >= 0 ? r[fullNameIdx]?.trim() || "" : "";
+
+    const composedName = [firstName, middleName].filter(Boolean).join(" ").trim();
+    const name = composedName || firstName || fullName || (lastName ? `${lastName}` : "");
     if (!name) continue;
+
+    const firstValue = (idxs) => {
+      for (const idx of idxs) {
+        const value = r[idx]?.trim();
+        if (value) return value;
+      }
+      return undefined;
+    };
+
     contacts.push({
       name,
-      phone: phoneIdx >= 0 ? r[phoneIdx]?.trim() || undefined : undefined,
-      email: emailIdx >= 0 ? r[emailIdx]?.trim() || undefined : undefined,
+      surname: lastName || undefined,
+      address: streetIdx >= 0 ? r[streetIdx]?.trim() || undefined : undefined,
+      city: cityIdx >= 0 ? r[cityIdx]?.trim() || undefined : undefined,
+      phone: firstValue(phoneIdxs),
+      email: firstValue(emailIdxs),
       notes: notesIdx >= 0 ? r[notesIdx]?.trim() || undefined : undefined,
     });
   }

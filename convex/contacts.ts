@@ -125,6 +125,9 @@ export const bulkCreate = mutation({
     contacts: v.array(
       v.object({
         name: v.string(),
+        surname: v.optional(v.string()),
+        address: v.optional(v.string()),
+        city: v.optional(v.string()),
         phone: v.optional(v.string()),
         email: v.optional(v.string()),
         notes: v.optional(v.string()),
@@ -138,6 +141,9 @@ export const bulkCreate = mutation({
         ctx.db.insert("contacts", {
           userId,
           name: c.name.trim(),
+          surname: c.surname?.trim() || undefined,
+          address: c.address?.trim() || undefined,
+          city: c.city?.trim() || undefined,
           phone: c.phone?.trim() || undefined,
           email: c.email?.trim() || undefined,
           notes: c.notes?.trim() || undefined,
