@@ -13,6 +13,9 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
+const STATUS_OPTIONS = ["pending", "in_progress", "done"];
+const STATUS_COLORS = { pending: "#f59e0b", in_progress: "#3b82f6", done: "#22c55e" };
+
 export default function WorklistForm({
   open,
   entryId,
@@ -41,6 +44,7 @@ export default function WorklistForm({
   const [actionId, setActionId] = useState("");
   const [date, setDate] = useState(todayISO());
   const [notes, setNotes] = useState("");
+  const [status, setStatus] = useState("pending");
   const [submitting, setSubmitting] = useState(false);
 
   const sortedContacts = useMemo(
@@ -78,6 +82,7 @@ export default function WorklistForm({
       setActionId(editing.actionId);
       setDate(editing.date);
       setNotes(editing.notes || "");
+      setStatus(editing.status ?? "pending");
     } else {
       const presetContact = presetContactId
         ? contacts.find((c) => c._id === presetContactId)
@@ -88,6 +93,7 @@ export default function WorklistForm({
       setActionId(actions[0]?._id || "");
       setDate(todayISO());
       setNotes("");
+      setStatus("pending");
     }
     setContactOpen(false);
     setContactHighlight(0);
@@ -153,6 +159,12 @@ export default function WorklistForm({
     }, 150);
   };
 
+  const statusLabel = (s) => {
+    if (s === "in_progress") return t("statusInProgress");
+    if (s === "done") return t("statusDone");
+    return t("statusPending");
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (submitting) return;
@@ -162,10 +174,10 @@ export default function WorklistForm({
     setSubmitting(true);
     try {
       if (entryId) {
-        await updateEntry({ id: entryId, contactId, deviceId, actionId, date, notes: notes || undefined });
+        await updateEntry({ id: entryId, contactId, deviceId, actionId, date, notes: notes || undefined, status });
         toast.show(t("toastWorklistUpdated"));
       } else {
-        await createEntry({ contactId, deviceId, actionId, date, notes: notes || undefined });
+        await createEntry({ contactId, deviceId, actionId, date, notes: notes || undefined, status });
         toast.show(t("toastWorklistAdded"));
       }
       onClose();
@@ -206,6 +218,25 @@ export default function WorklistForm({
           </div>
         </header>
         <div className="dialog__body">
+          {/* Status */}
+          <div className="field">
+            <span className="field__label">{t("worklistFieldStatus")}</span>
+            <div className="status-selector">
+              {STATUS_OPTIONS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  className={`status-selector__btn${status === s ? " is-active" : ""}`}
+                  style={{ "--sc": STATUS_COLORS[s] }}
+                  onClick={() => setStatus(s)}
+                >
+                  <span className="status-selector__dot" />
+                  {statusLabel(s)}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Contact */}
           <label className="field">
             <span className="field__label">{t("worklistFieldContact")}</span>

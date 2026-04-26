@@ -53,6 +53,7 @@ export default defineSchema({
     date: v.string(), // ISO date "YYYY-MM-DD"
     actionId: v.id("actions"),
     notes: v.optional(v.string()),
+    status: v.optional(v.union(v.literal("pending"), v.literal("in_progress"), v.literal("done"))),
   })
     .index("by_user", ["userId"])
     .index("by_contact", ["contactId"])
