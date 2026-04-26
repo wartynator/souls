@@ -63,6 +63,7 @@ export const create = mutation({
     actionId: v.id("actions"),
     date: v.string(),
     notes: v.optional(v.string()),
+    status: v.optional(v.union(v.literal("pending"), v.literal("in_progress"), v.literal("done"))),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
@@ -81,6 +82,7 @@ export const create = mutation({
       actionId: args.actionId,
       date: args.date,
       notes: args.notes?.trim() || undefined,
+      status: args.status ?? "pending",
     });
   },
 });
@@ -93,6 +95,7 @@ export const update = mutation({
     actionId: v.id("actions"),
     date: v.string(),
     notes: v.optional(v.string()),
+    status: v.optional(v.union(v.literal("pending"), v.literal("in_progress"), v.literal("done"))),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
@@ -111,7 +114,20 @@ export const update = mutation({
       actionId: args.actionId,
       date: args.date,
       notes: args.notes?.trim() || undefined,
+      status: args.status ?? "pending",
     });
+  },
+});
+
+export const setStatus = mutation({
+  args: {
+    id: v.id("worklist"),
+    status: v.union(v.literal("pending"), v.literal("in_progress"), v.literal("done")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireUser(ctx);
+    await ownedEntry(ctx, userId, args.id);
+    await ctx.db.patch(args.id, { status: args.status });
   },
 });
 

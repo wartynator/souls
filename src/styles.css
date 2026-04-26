@@ -1311,6 +1311,83 @@ select.field__input {
   color: var(--ink-mute);
 }
 
+/* ---------- Worklist status ---------- */
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: var(--status-color, var(--rule-2));
+  transition: transform .12s ease, opacity .12s ease;
+}
+.status-dot:hover { transform: scale(1.3); opacity: .8; }
+.status-dot--pending  { --status-color: #f59e0b; }
+.status-dot--in_progress { --status-color: #3b82f6; }
+.status-dot--done     { --status-color: #22c55e; }
+
+/* Status selector (inside form) */
+.status-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.status-selector__btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1.5px solid var(--rule);
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: all .12s ease;
+}
+.status-selector__btn:hover { border-color: var(--sc); color: var(--ink); }
+.status-selector__btn.is-active {
+  border-color: var(--sc);
+  background: color-mix(in srgb, var(--sc) 12%, transparent);
+  color: var(--ink);
+}
+.status-selector__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sc);
+  flex-shrink: 0;
+}
+
+/* Filter pills row */
+.filter-pills {
+  display: flex;
+  gap: 6px;
+  padding: 10px 16px 2px;
+  flex-shrink: 0;
+}
+.filter-pill {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--rule);
+  background: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: all .12s ease;
+  white-space: nowrap;
+}
+.filter-pill:hover { border-color: var(--ink-mute); color: var(--ink); }
+.filter-pill.is-active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+
 /* ---------- Contact import ---------- */
 .import__count {
   font-size: 13px;

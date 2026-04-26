@@ -158,8 +158,14 @@ const en = {
   importSuccess: "Imported {n} contacts",
   importNoContacts: "No contacts found in this file. Make sure it is a Google Contacts CSV export.",
   importInvalidFile: "Could not read the file. Please export as CSV from Google Contacts.",
+  // worklist status
+  statusPending: "Pending",
+  statusInProgress: "In Progress",
+  statusDone: "Done",
+  filterAll: "All",
   // worklist form
   worklistFormNew: "New worklist entry",
+  worklistFieldStatus: "Status",
   worklistFormEdit: "Edit worklist entry",
   worklistFieldContact: "Contact",
   worklistFieldDevice: "Device",
@@ -345,8 +351,14 @@ const sk = {
   importSuccess: "Importovaných {n} kontaktov",
   importNoContacts: "V súbore sa nenašli žiadne kontakty. Uistite sa, že ide o export z Google Kontaktov vo formáte CSV.",
   importInvalidFile: "Súbor sa nepodarilo načítať. Exportujte kontakty ako CSV z Google Kontaktov.",
+  // worklist status
+  statusPending: "Čaká",
+  statusInProgress: "Prebieha",
+  statusDone: "Hotovo",
+  filterAll: "Všetky",
   // worklist form
   worklistFormNew: "Nová zákazka",
+  worklistFieldStatus: "Stav",
   worklistFormEdit: "Upraviť zákazku",
   worklistFieldContact: "Kontakt",
   worklistFieldDevice: "Zariadenie",
