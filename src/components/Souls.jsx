@@ -16,6 +16,7 @@ import BarcodeScanner from "./BarcodeScanner.jsx";
 import ContactImport from "./ContactImport.jsx";
 import SettingsPanel from "./SettingsPanel.jsx";
 import WorklistReport from "./WorklistReport.jsx";
+import Dashboard from "./Dashboard.jsx";
 import { useToast } from "./Toast.jsx";
 import { useLocale } from "../i18n.jsx";
 
@@ -35,7 +36,7 @@ export default function Souls() {
   const deleteAction = useMutation(api.actions.remove);
   const deleteWorklistEntry = useMutation(api.worklist.remove);
 
-  const [tab, setTab] = useState("contacts"); // "contacts" | "devices" | "actions" | "worklist"
+  const [tab, setTab] = useState("home"); // "home" | "contacts" | "devices" | "actions" | "worklist"
   const [query, setQuery] = useState("");
   const [searchScannerOpen, setSearchScannerOpen] = useState(false);
 
@@ -272,6 +273,19 @@ export default function Souls() {
 
         <nav className="sidebar__nav" role="tablist">
           <button
+            className={`sidebar__item${tab === "home" ? " is-active" : ""}`}
+            onClick={() => handleTab("home")}
+            role="tab"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M3 12L12 3l9 9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M9 21V12h6v9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M3 12v9h18V12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span className="sidebar__label">{t("tabHome")}</span>
+          </button>
+
+          <button
             className={`sidebar__item${tab === "contacts" ? " is-active" : ""}`}
             onClick={() => handleTab("contacts")}
             role="tab"
@@ -320,7 +334,7 @@ export default function Souls() {
               <path d="M9 12h6M9 16h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
             <span className="sidebar__label">{t("tabWorklist")}</span>
-            <span className="sidebar__count">{worklist.length}</span>
+            <span className="sidebar__count">{worklist.filter(e => (e.status ?? "pending") !== "done").length}</span>
           </button>
         </nav>
 
@@ -360,7 +374,7 @@ export default function Souls() {
           />
         )}
 
-        <div className="toolbar">
+        {tab !== "home" && <div className="toolbar">
           <div className="search">
             <svg className="search__icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.5" />
@@ -409,9 +423,19 @@ export default function Souls() {
                t("addAction")}
             </span>
           </button>
-        </div>
+        </div>}
 
         <main className="main">
+          {tab === "home" && (
+            <Dashboard
+              worklist={worklist}
+              contacts={contacts}
+              devices={devices}
+              actions={actions}
+              onNavigate={handleTab}
+              onOpenEntry={(id) => { setWorklistFormId(id); setWorklistFormPresetContact(null); setWorklistFormPresetDevice(null); setWorklistFormOpen(true); }}
+            />
+          )}
           {tab === "contacts" && <ContactList contacts={contacts} query={query} onOpen={openContact} />}
           {tab === "devices" && <DeviceList devices={devices} query={query} onOpen={editDevice} />}
           {tab === "actions" && (
