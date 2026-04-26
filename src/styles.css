@@ -1543,10 +1543,29 @@ select.field__input {
   border-radius: var(--radius-sm);
 }
 .import__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   padding: 10px 14px;
   border-bottom: 1px solid var(--rule);
+  cursor: pointer;
 }
 .import__row:last-child { border-bottom: none; }
+.import__check {
+  flex-shrink: 0;
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.import__row-body { flex: 1; min-width: 0; }
+.import__row-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
 .import__name {
   margin: 0;
   font-size: 14px;
@@ -1557,6 +1576,20 @@ select.field__input {
   margin: 2px 0 0;
   font-size: 12px;
   color: var(--ink-mute);
+}
+.import__dupe-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: #92400e;
+  background: #fef3c7;
+  border-radius: 4px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+[data-theme="dark"] .import__dupe-badge {
+  color: #fbbf24;
+  background: rgba(251, 191, 36, .12);
 }
 
 /* Import source dropdown */
