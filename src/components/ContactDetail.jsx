@@ -1,3 +1,4 @@
+import "./ContactDetail.css";
 import Dialog from "./Dialog.jsx";
 import { useLocale } from "../i18n.jsx";
 
@@ -37,8 +38,17 @@ export default function ContactDetail({
             <h2 className="dialog__title">{fullName || t("contactUnnamed")}</h2>
           </div>
           <div className="dialog__head-actions contact-detail-sheet__head-actions">
-            <button type="button" className="btn btn--ghost contact-detail-sheet__edit" onClick={onEdit}>
-              {t("btnEdit")}
+            <button
+              type="button"
+              className="contact-action contact-action--edit"
+              onClick={onEdit}
+              aria-label={t("btnEdit")}
+            >
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 20h4.5L19 9.5 14.5 5 4 15.5V20Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+                <path d="m13.5 6 4.5 4.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              </svg>
+              <span>{t("btnEdit")}</span>
             </button>
             <button
               type="button"
@@ -139,17 +149,27 @@ export default function ContactDetail({
           </div>
         </div>
         <footer className="dialog__foot contact-detail-sheet__foot">
-          <button type="button" className="btn btn--text btn--danger" onClick={onDelete}>
-            {t("detailDeleteContact")}
-          </button>
-          <div className="dialog__foot-end">
+          <div className="contact-detail-sheet__actions" aria-label="Contact actions">
             {onAddWorklist && (
-              <button type="button" className="btn btn--ghost" onClick={() => onAddWorklist(contact._id)}>
-                {t("detailLogWork")}
+              <button type="button" className="contact-action" onClick={() => onAddWorklist(contact._id)}>
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8 6h11M8 12h11M8 18h7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                  <path d="M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                </svg>
+                <span>{t("detailLogWork")}</span>
               </button>
             )}
-            <button type="button" className="btn btn--ghost" onClick={onClose}>
-              {t("btnClose")}
+            <button type="button" className="contact-action" onClick={onClose}>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+              </svg>
+              <span>{t("btnClose")}</span>
+            </button>
+            <button type="button" className="contact-action contact-action--danger" onClick={onDelete}>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 7h14M10 11v6M14 11v6M9 7l1-2h4l1 2M7 7l1 13h8l1-13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span>{t("detailDeleteContact")}</span>
             </button>
           </div>
         </footer>
