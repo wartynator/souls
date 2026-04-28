@@ -49,11 +49,11 @@ export default function WorklistReport({ open, entry, contact, device, action, o
       {/* Report page */}
       <article className="report">
         <header className="report__header">
-          <span className="report__brand">Souls</span>
-          <div className="report__meta">
-            <span className="report__title">{t("reportTitle")}</span>
-            <span className="report__generated">{formatDate(entry.date)}</span>
+          <div>
+            <h1 className="report__title">{t("reportTitle")}</h1>
+            <p className="report__generated">{formatDate(entry.date)}</p>
           </div>
+          <span className="report__ref">#{entry._id.slice(-6).toUpperCase()}</span>
         </header>
 
         {/* 01 — Customer */}
