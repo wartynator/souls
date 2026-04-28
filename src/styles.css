@@ -949,6 +949,13 @@ select.field__input {
 
 @media print {
   .no-print { display: none !important; }
+
+  /* Hide every piece of app chrome — only the report document should print */
+  .sidebar,
+  .content,
+  .main,
+  .settings-overlay { display: none !important; }
+
   .report-overlay {
     position: static;
     background: #fff;
