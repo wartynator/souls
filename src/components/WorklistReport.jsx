@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { useLocale } from "../i18n.jsx";
 
 function Row({ label, value }) {
@@ -29,7 +30,7 @@ export default function WorklistReport({ open, entry, contact, device, action, o
       currency: "EUR",
     }).format(price);
 
-  return (
+  return createPortal(
     <div className="report-overlay">
       {/* Toolbar — hidden when printing */}
       <div className="report-toolbar no-print">
@@ -113,6 +114,7 @@ export default function WorklistReport({ open, entry, contact, device, action, o
           </dl>
         </section>
       </article>
-    </div>
+    </div>,
+    document.body,
   );
 }
