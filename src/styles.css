@@ -948,13 +948,10 @@ select.field__input {
 }
 
 @media print {
+  /* The report portal is a direct child of <body>, outside .app.
+     Hide the entire app container so nothing bleeds into the PDF. */
+  .app { display: none !important; }
   .no-print { display: none !important; }
-
-  /* Hide every piece of app chrome — only the report document should print */
-  .sidebar,
-  .content,
-  .main,
-  .settings-overlay { display: none !important; }
 
   .report-overlay {
     position: static;
