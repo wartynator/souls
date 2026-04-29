@@ -92,6 +92,15 @@
       margin-bottom: 36px;
       border-bottom: 2px solid #111;
     }
+    .report__logo {
+      height: 72px;
+      width: auto;
+      object-fit: contain;
+      display: block;
+    }
+    .report__header-right {
+      text-align: right;
+    }
     .report__title {
       font-family: "Instrument Serif", Georgia, serif;
       font-size: 34px;
@@ -110,7 +119,8 @@
       font-weight: 600;
       letter-spacing: 0.08em;
       color: #666;
-      padding-top: 4px;
+      display: block;
+      margin-bottom: 8px;
     }
 
     /* Two-column grid */
@@ -298,11 +308,12 @@
 
       <!-- Header -->
       <header class="report__header">
-        <div>
+        <img class="report__logo" src="termos-logo.png" alt="Termos" />
+        <div class="report__header-right">
+          <span class="report__ref">#85N881</span>
           <h1 class="report__title">Servisný protokol</h1>
           <p class="report__date">27. apríla 2026</p>
         </div>
-        <span class="report__ref">#85N881</span>
       </header>
 
       <!-- Customer + Device columns -->
