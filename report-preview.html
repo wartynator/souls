@@ -85,21 +85,30 @@
 
     /* Header */
     .report__header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
       padding-bottom: 24px;
       margin-bottom: 36px;
       border-bottom: 2px solid #111;
+    }
+    .report__header-center {
+      text-align: center;
     }
     .report__logo {
       height: 72px;
       width: auto;
       object-fit: contain;
       display: block;
+      margin-left: auto;
     }
-    .report__header-right {
-      text-align: right;
+    .report__ref {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #666;
+      display: block;
+      margin-bottom: 8px;
     }
     .report__title {
       font-family: "Instrument Serif", Georgia, serif;
@@ -113,14 +122,6 @@
     .report__date {
       font-size: 13px;
       color: #444;
-    }
-    .report__ref {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      color: #666;
-      display: block;
-      margin-bottom: 8px;
     }
 
     /* Two-column grid */
@@ -308,12 +309,12 @@
 
       <!-- Header -->
       <header class="report__header">
-        <img class="report__logo" src="termos-logo.png" alt="Termos" />
-        <div class="report__header-right">
-          <span class="report__ref">#85N881</span>
+        <span class="report__ref">#85N881</span>
+        <div class="report__header-center">
           <h1 class="report__title">Servisný protokol</h1>
           <p class="report__date">27. apríla 2026</p>
         </div>
+        <img class="report__logo" src="termos-logo.png" alt="Termos" />
       </header>
 
       <!-- Customer + Device columns -->
