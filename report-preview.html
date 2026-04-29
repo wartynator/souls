@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sk">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Service Report — Preview</title>
+  <title>Servisný protokol — Náhľad</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -281,14 +281,14 @@
   <div class="toolbar">
     <button class="toolbar__close" onclick="window.close()">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-      Close
+      Zavrieť
     </button>
-    <span class="toolbar__label">Service Report — Adam Smith</span>
+    <span class="toolbar__label">Servisný protokol — Adam Smith</span>
     <button class="toolbar__export" onclick="window.print()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/>
       </svg>
-      Export as PDF
+      Uložiť ako PDF
     </button>
   </div>
 
@@ -299,8 +299,8 @@
       <!-- Header -->
       <header class="report__header">
         <div>
-          <h1 class="report__title">Service Report</h1>
-          <p class="report__date">27 April 2026</p>
+          <h1 class="report__title">Servisný protokol</h1>
+          <p class="report__date">27. apríla 2026</p>
         </div>
         <span class="report__ref">#85N881</span>
       </header>
@@ -308,19 +308,19 @@
       <!-- Customer + Device columns -->
       <div class="report__cols">
         <div class="report__col">
-          <p class="report__col-title">Customer</p>
-          <div class="row"><span class="row__label">Name</span><span class="row__value">Adam Smith</span></div>
-          <div class="row"><span class="row__label">Phone</span><span class="row__value">094-928-4155</span></div>
+          <p class="report__col-title">Zákazník</p>
+          <div class="row"><span class="row__label">Meno</span><span class="row__value">Adam Smith</span></div>
+          <div class="row"><span class="row__label">Telefón</span><span class="row__value">094-928-4155</span></div>
           <div class="row"><span class="row__label">Email</span><span class="row__value">adam@example.com</span></div>
-          <div class="row"><span class="row__label">City</span><span class="row__value">Bratislava</span></div>
+          <div class="row"><span class="row__label">Mesto</span><span class="row__value">Bratislava</span></div>
         </div>
         <div class="report__col">
-          <p class="report__col-title">Device</p>
-          <div class="row"><span class="row__label">Name</span><span class="row__value">MacBook Pro 15"</span></div>
-          <div class="row"><span class="row__label">Manufacturer</span><span class="row__value">Apple</span></div>
-          <div class="row"><span class="row__label">Type</span><span class="row__value">Laptop</span></div>
-          <div class="row"><span class="row__label">Year</span><span class="row__value">2022</span></div>
-          <div class="row"><span class="row__label">Serial no.</span><span class="row__value">C02XY1234ABC</span></div>
+          <p class="report__col-title">Zariadenie</p>
+          <div class="row"><span class="row__label">Názov</span><span class="row__value">MacBook Pro 15"</span></div>
+          <div class="row"><span class="row__label">Výrobca</span><span class="row__value">Apple</span></div>
+          <div class="row"><span class="row__label">Typ</span><span class="row__value">Laptop</span></div>
+          <div class="row"><span class="row__label">Rok výroby</span><span class="row__value">2022</span></div>
+          <div class="row"><span class="row__label">Sériové č.</span><span class="row__value">C02XY1234ABC</span></div>
         </div>
       </div>
 
@@ -328,13 +328,13 @@
       <section class="report__section">
         <div class="report__section-head">
           <span class="report__section-num">03</span>
-          <span class="report__section-title">Service Performed</span>
+          <span class="report__section-title">Vykonaný servis</span>
         </div>
         <div class="report__section-body">
-          <p class="report__action-name">Screen replacement</p>
-          <p class="report__notes">OEM panel used · 90-day warranty on parts and labour</p>
+          <p class="report__action-name">Výmena displeja</p>
+          <p class="report__notes">Použitý OEM panel · 90-dňová záruka na diely a prácu</p>
           <div class="report__price-row">
-            <span class="report__price-label">Total</span>
+            <span class="report__price-label">Celkom</span>
             <span class="report__price-value">50,00 €</span>
           </div>
         </div>
@@ -344,16 +344,16 @@
       <footer class="report__signature">
         <div class="report__sig-grid">
           <div class="report__sig-item">
-            <span class="report__sig-label">Technician</span>
+            <span class="report__sig-label">Technik</span>
             <div class="report__sig-line"></div>
           </div>
           <div class="report__sig-row">
             <div class="report__sig-item">
-              <span class="report__sig-label">Customer</span>
+              <span class="report__sig-label">Zákazník</span>
               <div class="report__sig-line"></div>
             </div>
             <div class="report__sig-item">
-              <span class="report__sig-label">Date</span>
+              <span class="report__sig-label">Dátum</span>
               <div class="report__sig-line"></div>
             </div>
           </div>
