@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Service Report — Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Inter", system-ui, sans-serif;
+      background: #181818;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: #181818;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      z-index: 10;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .toolbar__close {
+      background: transparent;
+      border: 1px solid #444;
+      color: #ccc;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .toolbar__close:hover { border-color: #888; color: #fff; }
+    .toolbar__label {
+      font-size: 13px;
+      color: #666;
+      letter-spacing: 0.01em;
+    }
+    .toolbar__export {
+      background: #fff;
+      color: #111;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .toolbar__export:hover { background: #f0f0f0; }
+
+    /* ── Document wrapper ── */
+    .doc-wrap {
+      width: 100%;
+      max-width: 760px;
+      padding: 32px 20px 80px;
+    }
+
+    /* ── Report document ── */
+    .report {
+      background: #fff;
+      color: #111;
+      padding: 56px 64px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2), 0 16px 48px rgba(0,0,0,.3);
+      font-family: "Inter", system-ui, sans-serif;
+    }
+
+    /* Header */
+    .report__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-bottom: 24px;
+      margin-bottom: 36px;
+      border-bottom: 2px solid #111;
+    }
+    .report__title {
+      font-family: "Instrument Serif", Georgia, serif;
+      font-size: 34px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      color: #111;
+      line-height: 1;
+      margin: 0 0 10px;
+    }
+    .report__date {
+      font-size: 13px;
+      color: #888;
+    }
+    .report__ref {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #bbb;
+      padding-top: 4px;
+    }
+
+    /* Two-column grid */
+    .report__cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      margin-bottom: 32px;
+      border: 1px solid #ebebeb;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .report__col {
+      padding: 24px 28px;
+    }
+    .report__col:first-child {
+      border-right: 1px solid #ebebeb;
+    }
+    .report__col-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 16px;
+    }
+
+    /* Field rows */
+    .row {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 8px;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .row:last-child { margin-bottom: 0; }
+    .row__label {
+      font-size: 11px;
+      color: #999;
+      font-weight: 500;
+    }
+    .row__value {
+      font-size: 13px;
+      color: #111;
+      line-height: 1.5;
+    }
+
+    /* Service section */
+    .report__section {
+      margin-bottom: 32px;
+    }
+    .report__section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-left: 3px solid #111;
+      padding-left: 12px;
+      margin-bottom: 16px;
+    }
+    .report__section-num {
+      font-family: "Instrument Serif", serif;
+      font-size: 10px;
+      color: #bbb;
+      letter-spacing: 0.04em;
+    }
+    .report__section-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #111;
+    }
+    .report__section-body {
+      padding-left: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .report__action-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #111;
+      margin-bottom: 4px;
+    }
+    .report__notes {
+      font-size: 13px;
+      color: #666;
+      font-style: italic;
+    }
+    .report__price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-top: 1px solid #ebebeb;
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+    .report__price-label {
+      font-size: 12px;
+      color: #999;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .report__price-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111;
+      letter-spacing: -0.01em;
+    }
+
+    /* Signature block */
+    .report__signature {
+      margin-top: 48px;
+      padding-top: 28px;
+      border-top: 1px solid #e0e0e0;
+    }
+    .report__sig-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+    .report__sig-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 32px;
+    }
+    .report__sig-item {}
+    .report__sig-label {
+      font-size: 11px;
+      color: #999;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .report__sig-line {
+      border-bottom: 1px solid #bbb;
+      height: 1px;
+    }
+
+    /* Print */
+    @media print {
+      body { background: #fff; }
+      .toolbar { display: none !important; }
+      .doc-wrap { padding: 0; max-width: 100%; }
+      .report {
+        box-shadow: none;
+        padding: 0;
+      }
+      .report__signature { margin-top: 60px; break-inside: avoid; }
+      .report__cols { break-inside: avoid; }
+      @page { margin: 2cm; size: A4 portrait; }
+    }
+
+    @media (max-width: 560px) {
+      .report { padding: 28px 20px; }
+      .report__title { font-size: 26px; }
+      .report__cols { grid-template-columns: 1fr; }
+      .report__col:first-child { border-right: none; border-bottom: 1px solid #ebebeb; }
+      .row { grid-template-columns: 90px 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preview toolbar (hidden when printing) -->
+  <div class="toolbar">
+    <button class="toolbar__close" onclick="window.close()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      Close
+    </button>
+    <span class="toolbar__label">Service Report — Adam Smith</span>
+    <button class="toolbar__export" onclick="window.print()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/>
+      </svg>
+      Export as PDF
+    </button>
+  </div>
+
+  <!-- Document -->
+  <div class="doc-wrap">
+    <article class="report">
+
+      <!-- Header -->
+      <header class="report__header">
+        <div>
+          <h1 class="report__title">Service Report</h1>
+          <p class="report__date">27 April 2026</p>
+        </div>
+        <span class="report__ref">#85N881</span>
+      </header>
+
+      <!-- Customer + Device columns -->
+      <div class="report__cols">
+        <div class="report__col">
+          <p class="report__col-title">Customer</p>
+          <div class="row"><span class="row__label">Name</span><span class="row__value">Adam Smith</span></div>
+          <div class="row"><span class="row__label">Phone</span><span class="row__value">094-928-4155</span></div>
+          <div class="row"><span class="row__label">Email</span><span class="row__value">adam@example.com</span></div>
+          <div class="row"><span class="row__label">City</span><span class="row__value">Bratislava</span></div>
+        </div>
+        <div class="report__col">
+          <p class="report__col-title">Device</p>
+          <div class="row"><span class="row__label">Name</span><span class="row__value">MacBook Pro 15"</span></div>
+          <div class="row"><span class="row__label">Manufacturer</span><span class="row__value">Apple</span></div>
+          <div class="row"><span class="row__label">Type</span><span class="row__value">Laptop</span></div>
+          <div class="row"><span class="row__label">Year</span><span class="row__value">2022</span></div>
+          <div class="row"><span class="row__label">Serial no.</span><span class="row__value">C02XY1234ABC</span></div>
+        </div>
+      </div>
+
+      <!-- Service -->
+      <section class="report__section">
+        <div class="report__section-head">
+          <span class="report__section-num">03</span>
+          <span class="report__section-title">Service Performed</span>
+        </div>
+        <div class="report__section-body">
+          <p class="report__action-name">Screen replacement</p>
+          <p class="report__notes">OEM panel used · 90-day warranty on parts and labour</p>
+          <div class="report__price-row">
+            <span class="report__price-label">Total</span>
+            <span class="report__price-value">50,00 €</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Signature block -->
+      <footer class="report__signature">
+        <div class="report__sig-grid">
+          <div class="report__sig-item">
+            <span class="report__sig-label">Technician</span>
+            <div class="report__sig-line"></div>
+          </div>
+          <div class="report__sig-row">
+            <div class="report__sig-item">
+              <span class="report__sig-label">Customer</span>
+              <div class="report__sig-line"></div>
+            </div>
+            <div class="report__sig-item">
+              <span class="report__sig-label">Date</span>
+              <div class="report__sig-line"></div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+    </article>
+  </div>
+
+</body>
+</html>
