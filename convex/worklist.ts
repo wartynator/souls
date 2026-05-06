@@ -64,6 +64,7 @@ export const create = mutation({
     date: v.string(),
     notes: v.optional(v.string()),
     status: v.optional(v.union(v.literal("pending"), v.literal("in_progress"), v.literal("done"))),
+    nextServiceDate: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
@@ -83,6 +84,7 @@ export const create = mutation({
       date: args.date,
       notes: args.notes?.trim() || undefined,
       status: args.status ?? "pending",
+      nextServiceDate: args.nextServiceDate || undefined,
     });
   },
 });
@@ -96,6 +98,7 @@ export const update = mutation({
     date: v.string(),
     notes: v.optional(v.string()),
     status: v.optional(v.union(v.literal("pending"), v.literal("in_progress"), v.literal("done"))),
+    nextServiceDate: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
@@ -115,6 +118,7 @@ export const update = mutation({
       date: args.date,
       notes: args.notes?.trim() || undefined,
       status: args.status ?? "pending",
+      nextServiceDate: args.nextServiceDate || undefined,
     });
   },
 });

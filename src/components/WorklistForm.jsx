@@ -13,6 +13,12 @@ function todayISO() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function addMonths(isoDate, months) {
+  const d = new Date(isoDate + "T12:00:00");
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().slice(0, 10);
+}
+
 const STATUS_OPTIONS = ["pending", "in_progress", "done"];
 const STATUS_COLORS = { pending: "#f59e0b", in_progress: "#3b82f6", done: "#22c55e" };
 
@@ -45,6 +51,7 @@ export default function WorklistForm({
   const [date, setDate] = useState(todayISO());
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState("pending");
+  const [nextServiceDate, setNextServiceDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const sortedContacts = useMemo(
@@ -83,6 +90,7 @@ export default function WorklistForm({
       setDate(editing.date);
       setNotes(editing.notes || "");
       setStatus(editing.status ?? "pending");
+      setNextServiceDate(editing.nextServiceDate || "");
     } else {
       const presetContact = presetContactId
         ? contacts.find((c) => c._id === presetContactId)
@@ -94,6 +102,7 @@ export default function WorklistForm({
       setDate(todayISO());
       setNotes("");
       setStatus("pending");
+      setNextServiceDate("");
     }
     setContactOpen(false);
     setContactHighlight(0);
@@ -174,10 +183,10 @@ export default function WorklistForm({
     setSubmitting(true);
     try {
       if (entryId) {
-        await updateEntry({ id: entryId, contactId, deviceId, actionId, date, notes: notes || undefined, status });
+        await updateEntry({ id: entryId, contactId, deviceId, actionId, date, notes: notes || undefined, status, nextServiceDate: nextServiceDate || undefined });
         toast.show(t("toastWorklistUpdated"));
       } else {
-        await createEntry({ contactId, deviceId, actionId, date, notes: notes || undefined, status });
+        await createEntry({ contactId, deviceId, actionId, date, notes: notes || undefined, status, nextServiceDate: nextServiceDate || undefined });
         toast.show(t("toastWorklistAdded"));
       }
       onClose();
@@ -346,6 +355,44 @@ export default function WorklistForm({
               placeholder={t("fieldNotesPlaceholder")}
             />
           </label>
+
+          {/* Next service date */}
+          <div className="field">
+            <span className="field__label">{t("fieldNextService")}</span>
+            <div className="field-row field-row--gap">
+              <div className="field__input-row" style={{ flex: 1 }}>
+                <input
+                  className="field__input"
+                  type="date"
+                  value={nextServiceDate}
+                  onChange={(e) => setNextServiceDate(e.target.value)}
+                />
+                {nextServiceDate && (
+                  <button
+                    type="button"
+                    className="btn btn--ghost btn--small field__scan-btn"
+                    onClick={() => setNextServiceDate("")}
+                    aria-label="Clear"
+                  >×</button>
+                )}
+              </div>
+              <select
+                className="field__input"
+                style={{ width: "auto", flexShrink: 0 }}
+                value=""
+                onChange={(e) => {
+                  const months = parseInt(e.target.value, 10);
+                  if (months && date) setNextServiceDate(addMonths(date, months));
+                }}
+              >
+                <option value="">{t("repeatShortcut")}</option>
+                <option value="1">{t("repeat1Month")}</option>
+                <option value="3">{t("repeat3Months")}</option>
+                <option value="6">{t("repeat6Months")}</option>
+                <option value="12">{t("repeat1Year")}</option>
+              </select>
+            </div>
+          </div>
         </div>
         <footer className="dialog__foot">
           {entryId ? (
