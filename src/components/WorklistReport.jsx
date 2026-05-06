@@ -57,7 +57,7 @@ export default function WorklistReport({ open, entry, contact, device, action, o
               <h1 className="report__title">{t("reportTitle")}</h1>
               <p className="report__date">{formatDate(entry.date)}</p>
             </div>
-            <img className="report__logo" src="/termos-logo.png" alt="Termos" />
+            <img className="report__logo" src="/termos_logo.jpeg" alt="Termos" />
           </header>
 
           {/* Customer + Device — two-column grid */}
