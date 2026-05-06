@@ -14,7 +14,13 @@ export default function Dashboard({ worklist, contacts, devices, actions, onNavi
 
   const todayISO = new Date().toISOString().slice(0, 10);
 
-  const { openCount, todayEntries, inProgressEntries } = useMemo(() => {
+  const in30Days = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 30);
+    return d.toISOString().slice(0, 10);
+  }, []);
+
+  const { openCount, todayEntries, inProgressEntries, dueSoonEntries } = useMemo(() => {
     const open = worklist.filter((e) => (e.status ?? "pending") !== "done");
     return {
       openCount: open.length,
@@ -26,10 +32,21 @@ export default function Dashboard({ worklist, contacts, devices, actions, onNavi
         .filter((e) => (e.status ?? "pending") === "in_progress")
         .sort((a, b) => b.date.localeCompare(a.date))
         .slice(0, 5),
+      dueSoonEntries: worklist
+        .filter((e) => e.nextServiceDate && e.nextServiceDate <= in30Days && (e.status ?? "pending") !== "done")
+        .sort((a, b) => a.nextServiceDate.localeCompare(b.nextServiceDate))
+        .slice(0, 5),
     };
-  }, [worklist, todayISO]);
+  }, [worklist, todayISO, in30Days]);
 
   const formatDate = (iso) => iso.split("-").reverse().join(".");
+
+  const dueSoonLabel = (iso) => {
+    const diff = Math.round((new Date(iso + "T12:00:00") - new Date(todayISO + "T12:00:00")) / 86400000);
+    if (diff === 0) return t("dueSoonToday");
+    if (diff < 0) return t("dueSoonOverdue");
+    return t("dueSoonDays", { n: diff });
+  };
 
   const EntryRow = ({ entry }) => {
     const status = entry.status ?? "pending";
@@ -126,6 +143,39 @@ export default function Dashboard({ worklist, contacts, devices, actions, onNavi
         ) : (
           <div className="dash__rows">
             {inProgressEntries.map((e) => <EntryRow key={e._id} entry={e} />)}
+          </div>
+        )}
+      </div>
+
+      {/* Due soon */}
+      <div className="dash__section">
+        <div className="dash__section-head">
+          <p className="dash__section-title">{t("dashDueSoon")}</p>
+          {dueSoonEntries.length > 0 && (
+            <button type="button" className="dash__view-all" onClick={() => onNavigate("worklist")}>
+              {t("dashViewAll")} →
+            </button>
+          )}
+        </div>
+        {dueSoonEntries.length === 0 ? (
+          <p className="dash__empty">{t("dashNoDueSoon")}</p>
+        ) : (
+          <div className="dash__rows">
+            {dueSoonEntries.map((e) => (
+              <div key={e._id} className="dash__row" onClick={() => onOpenEntry(e._id)}>
+                <span className="dash__due-badge">{dueSoonLabel(e.nextServiceDate)}</span>
+                <div className="dash__row-main">
+                  <p className="dash__row-name">{e.contactName || t("contactUnnamed")}</p>
+                  <p className="dash__row-sub">
+                    {e.actionName}
+                    {e.deviceName && ` · ${e.deviceName}`}
+                  </p>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="m9 6 6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+            ))}
           </div>
         )}
       </div>
