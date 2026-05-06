@@ -36,7 +36,11 @@ export default function WorklistReport({ open, entry, contact, device, action, o
         <span className="report-toolbar__label">
           {t("reportTitle")} — {contactName}
         </span>
-        <button className="report-toolbar__export" onClick={() => window.print()}>
+        <button className="report-toolbar__export" onClick={() => {
+          const overlay = document.querySelector('.report-overlay');
+          if (overlay) overlay.scrollTop = 0;
+          setTimeout(() => window.print(), 50);
+        }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M6 9V2h12v7"/>
             <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
