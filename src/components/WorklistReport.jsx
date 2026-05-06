@@ -1,8 +1,13 @@
+import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import { useLocale } from "../i18n.jsx";
 
 export default function WorklistReport({ open, entry, contact, device, action, onClose }) {
   const { locale, t } = useLocale();
+  const reportRef = useRef(null);
+  const [downloading, setDownloading] = useState(false);
 
   if (!open || !entry || !contact || !device || !action) return null;
 
@@ -23,10 +28,41 @@ export default function WorklistReport({ open, entry, contact, device, action, o
   const contactName = [contact.name, contact.surname].filter(Boolean).join(" ");
   const ref = `#${entry._id.slice(-6).toUpperCase()}`;
 
+  const handleDownload = async () => {
+    if (!reportRef.current || downloading) return;
+    setDownloading(true);
+    try {
+      const canvas = await html2canvas(reportRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const imgH = (canvas.height * pageW) / canvas.width;
+
+      let y = 0;
+      while (y < imgH) {
+        if (y > 0) pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, -y, pageW, imgH);
+        y += pageH;
+      }
+
+      const filename = `report-${contactName.replace(/\s+/g, "-") || "service"}-${entry._id.slice(-6).toUpperCase()}.pdf`;
+      pdf.save(filename);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return createPortal(
     <div className="report-overlay">
-      {/* Toolbar — hidden when printing */}
-      <div className="report-toolbar no-print">
+      {/* Toolbar */}
+      <div className="report-toolbar">
         <button className="report-toolbar__close" onClick={onClose}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
             <path d="M18 6 6 18M6 6l12 12"/>
@@ -36,23 +72,25 @@ export default function WorklistReport({ open, entry, contact, device, action, o
         <span className="report-toolbar__label">
           {t("reportTitle")} — {contactName}
         </span>
-        <button className="report-toolbar__export" onClick={() => {
-          const overlay = document.querySelector('.report-overlay');
-          if (overlay) overlay.scrollTop = 0;
-          setTimeout(() => window.print(), 50);
-        }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M6 9V2h12v7"/>
-            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-            <rect x="6" y="14" width="12" height="8" rx="1"/>
-          </svg>
-          {t("reportPrint")}
+        <button className="report-toolbar__export" onClick={handleDownload} disabled={downloading}>
+          {downloading ? (
+            t("btnSaving")
+          ) : (
+            <>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              {t("reportPrint")}
+            </>
+          )}
         </button>
       </div>
 
       {/* Document */}
       <div className="report-doc-wrap">
-        <article className="report">
+        <article className="report" ref={reportRef}>
 
           {/* Header: ref left · title center · logo right */}
           <header className="report__header">

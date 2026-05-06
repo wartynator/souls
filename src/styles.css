@@ -1110,40 +1110,8 @@ select.field__input {
 }
 
 @media print {
-  .app { display: none !important; }
-  .no-print { display: none !important; }
-
-  html, body {
-    height: auto !important;
-    overflow: visible !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  .report-overlay {
-    position: static !important;
-    display: block !important;
-    background: #fff !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    overflow: visible !important;
-    height: auto !important;
-  }
-  .report-doc-wrap {
-    display: block !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: 100% !important;
-  }
-  .report {
-    box-shadow: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    max-width: 100% !important;
-  }
-  .report__signature { margin-top: 60px; break-inside: avoid; }
-  .report__cols { break-inside: avoid; }
-  @page { margin: 2cm; size: A4 portrait; }
+  /* Fallback — hide everything if user manually triggers browser print */
+  .report-overlay { display: none !important; }
 }
 
 @media (max-width: 560px) {

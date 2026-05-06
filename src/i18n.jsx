@@ -193,7 +193,7 @@ const en = {
   worklistFieldDate: "Date",
   // report
   reportTitle: "Service Report",
-  reportPrint: "Save as PDF",
+  reportPrint: "Download PDF",
   reportSection1: "Customer",
   reportSection2: "Device",
   reportSection3: "Service Performed",
@@ -410,7 +410,7 @@ const sk = {
   worklistFieldDate: "Dátum",
   // report
   reportTitle: "Servisný protokol",
-  reportPrint: "Uložiť ako PDF",
+  reportPrint: "Stiahnuť PDF",
   reportSection1: "Zákazník",
   reportSection2: "Zariadenie",
   reportSection3: "Vykonaný servis",
