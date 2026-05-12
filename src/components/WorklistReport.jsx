@@ -103,7 +103,9 @@ export default function WorklistReport({ open, entry, contact, device, action, c
 
           {/* Header: logo left — company info right */}
           <header className="report__header">
-            <img className="report__logo" src="/termos_logo.jpeg" alt="Termos" />
+            {(co.logoUrl || !company) && (
+              <img className="report__logo" src={co.logoUrl ?? "/termos_logo.jpeg"} alt={co.name} />
+            )}
             <div className="report__company">
               <p className="report__company-name">{co.name}</p>
               {co.street && <p>{co.street}{co.city ? `, ${co.city}` : ""}{co.country ? `, ${co.country}` : ""}</p>}

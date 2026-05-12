@@ -73,5 +73,6 @@ export default defineSchema({
     phone: v.optional(v.string()),
     email: v.optional(v.string()),
     vatId: v.optional(v.string()),
+    logoId: v.optional(v.id("_storage")),
   }).index("by_user", ["userId"]),
 });
