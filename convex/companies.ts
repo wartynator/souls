@@ -14,10 +14,21 @@ export const get = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return null;
-    return await ctx.db
+    const company = await ctx.db
       .query("companies")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .first();
+    if (!company) return null;
+    const logoUrl = company.logoId ? await ctx.storage.getUrl(company.logoId) : null;
+    return { ...company, logoUrl };
+  },
+});
+
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    await requireUser(ctx);
+    return await ctx.storage.generateUploadUrl();
   },
 });
 
@@ -30,6 +41,7 @@ export const upsert = mutation({
     phone: v.optional(v.string()),
     email: v.optional(v.string()),
     vatId: v.optional(v.string()),
+    logoId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);
@@ -46,6 +58,7 @@ export const upsert = mutation({
         phone: args.phone,
         email: args.email,
         vatId: args.vatId,
+        logoId: args.logoId,
       });
     } else {
       await ctx.db.insert("companies", { userId, ...args });
