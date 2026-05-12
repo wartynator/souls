@@ -4,14 +4,15 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useLocale } from "../i18n.jsx";
 
-const COMPANY = {
+const COMPANY_FALLBACK = {
   name: "TERMOS",
   street: "M.R.Štefanika 2",
   city: "07501 TREBIŠOV",
   country: "SLOVENSKO",
 };
 
-export default function WorklistReport({ open, entry, contact, device, action, onClose }) {
+export default function WorklistReport({ open, entry, contact, device, action, company, onClose }) {
+  const co = company ?? COMPANY_FALLBACK;
   const { locale, t } = useLocale();
   const reportRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
@@ -104,10 +105,13 @@ export default function WorklistReport({ open, entry, contact, device, action, o
           <header className="report__header">
             <img className="report__logo" src="/termos_logo.jpeg" alt="Termos" />
             <div className="report__company">
-              <p className="report__company-name">{COMPANY.name}</p>
-              <p>{COMPANY.street}</p>
-              <p>{COMPANY.city}</p>
-              <p>{COMPANY.country}</p>
+              <p className="report__company-name">{co.name}</p>
+              {co.street  && <p>{co.street}</p>}
+              {co.city    && <p>{co.city}</p>}
+              {co.country && <p>{co.country}</p>}
+              {co.phone   && <p>{co.phone}</p>}
+              {co.email   && <p>{co.email}</p>}
+              {co.vatId   && <p>{co.vatId}</p>}
             </div>
           </header>
 

@@ -15,6 +15,7 @@ import ConfirmDialog from "./ConfirmDialog.jsx";
 import BarcodeScanner from "./BarcodeScanner.jsx";
 import ContactImport from "./ContactImport.jsx";
 import SettingsPanel from "./SettingsPanel.jsx";
+import CompanyForm from "./CompanyForm.jsx";
 import WorklistReport from "./WorklistReport.jsx";
 import Dashboard from "./Dashboard.jsx";
 import { useToast } from "./Toast.jsx";
@@ -30,6 +31,7 @@ export default function Souls() {
   const actions = useQuery(api.actions.list) ?? [];
   const worklist = useQuery(api.worklist.list) ?? [];
   const currentUser = useQuery(api.users.currentUser);
+  const company = useQuery(api.companies.get) ?? null;
 
   const deleteContact = useMutation(api.contacts.remove);
   const deleteDevice = useMutation(api.devices.remove);
@@ -62,6 +64,7 @@ export default function Souls() {
 
   const [confirm, setConfirm] = useState(null); // { kind, id, title, text }
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [companyFormOpen, setCompanyFormOpen] = useState(false);
   const [reportEntryId, setReportEntryId] = useState(null);
   const [darkMode, setDarkMode] = useState(() => {
     try {
@@ -536,10 +539,18 @@ export default function Souls() {
       <SettingsPanel
         open={settingsOpen}
         email={currentUser?.email}
+        company={company}
         darkMode={darkMode}
         onToggleDark={() => setDarkMode(d => !d)}
         onSignOut={() => { signOut(); setSettingsOpen(false); }}
         onClose={() => setSettingsOpen(false)}
+        onEditCompany={() => { setSettingsOpen(false); setCompanyFormOpen(true); }}
+      />
+
+      <CompanyForm
+        open={companyFormOpen}
+        company={company}
+        onClose={() => setCompanyFormOpen(false)}
       />
 
       {(() => {
@@ -554,6 +565,7 @@ export default function Souls() {
             contact={contact}
             device={device}
             action={action}
+            company={company}
             onClose={() => setReportEntryId(null)}
           />
         );
