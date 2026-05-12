@@ -31,21 +31,10 @@ export const list = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
-
-    const contacts = await ctx.db
+    return ctx.db
       .query("contacts")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
-
-    return Promise.all(
-      contacts.map(async (c) => {
-        const devices = await ctx.db
-          .query("devices")
-          .withIndex("by_contact", (q) => q.eq("contactId", c._id))
-          .collect();
-        return { ...c, deviceCount: devices.length };
-      }),
-    );
   },
 });
 

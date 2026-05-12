@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation } from "convex/react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { api } from "../../convex/_generated/api";
@@ -32,6 +32,34 @@ export default function Souls() {
   const worklist = useQuery(api.worklist.list) ?? [];
   const currentUser = useQuery(api.users.currentUser);
   const company = useQuery(api.companies.get) ?? null;
+
+  // O(1) lookup maps — built once per data change
+  const contactMap = useMemo(() => new Map(contacts.map((c) => [c._id, c])), [contacts]);
+  const deviceMap  = useMemo(() => new Map(devices.map((d) => [d._id, d])), [devices]);
+  const actionMap  = useMemo(() => new Map(actions.map((a) => [a._id, a])), [actions]);
+
+  // Enrich worklist client-side (was 3×N db.get calls on the server)
+  const enrichedWorklist = useMemo(() =>
+    worklist.map((e) => {
+      const contact = contactMap.get(e.contactId);
+      const device  = deviceMap.get(e.deviceId);
+      const action  = actionMap.get(e.actionId);
+      return {
+        ...e,
+        contactName: contact ? [contact.name, contact.surname].filter(Boolean).join(" ") : null,
+        deviceName:  device?.name  ?? null,
+        actionName:  action?.name  ?? null,
+      };
+    }),
+    [worklist, contactMap, deviceMap, actionMap],
+  );
+
+  // Add device counts to contacts client-side (was N×index-scan on the server)
+  const contactsWithCount = useMemo(() => {
+    const counts = new Map();
+    for (const d of devices) counts.set(d.contactId, (counts.get(d.contactId) ?? 0) + 1);
+    return contacts.map((c) => ({ ...c, deviceCount: counts.get(c._id) ?? 0 }));
+  }, [contacts, devices]);
 
   const deleteContact = useMutation(api.contacts.remove);
   const deleteDevice = useMutation(api.devices.remove);
@@ -406,15 +434,15 @@ export default function Souls() {
         <main className="main">
           {tab === "home" && (
             <Dashboard
-              worklist={worklist}
-              contacts={contacts}
+              worklist={enrichedWorklist}
+              contacts={contactsWithCount}
               devices={devices}
               actions={actions}
               onNavigate={handleTab}
               onOpenEntry={(id) => { setWorklistFormId(id); setWorklistFormPresetContact(null); setWorklistFormPresetDevice(null); setWorklistFormOpen(true); }}
             />
           )}
-          {tab === "contacts" && <ContactList contacts={contacts} query={query} onOpen={openContact} />}
+          {tab === "contacts" && <ContactList contacts={contactsWithCount} query={query} onOpen={openContact} />}
           {tab === "devices" && <DeviceList devices={devices} query={query} onOpen={editDevice} />}
           {tab === "actions" && (
             <ActionList
@@ -425,7 +453,7 @@ export default function Souls() {
           )}
           {tab === "worklist" && (
             <WorklistList
-              worklist={worklist}
+              worklist={enrichedWorklist}
               query={query}
               onOpen={(id) => { setWorklistFormId(id); setWorklistFormPresetContact(null); setWorklistFormPresetDevice(null); setWorklistFormOpen(true); }}
             />
@@ -511,7 +539,7 @@ export default function Souls() {
       <WorklistForm
         open={worklistFormOpen}
         entryId={worklistFormId}
-        worklist={worklist}
+        worklist={enrichedWorklist}
         contacts={contacts}
         devices={devices}
         actions={actions}
@@ -548,10 +576,10 @@ export default function Souls() {
       />
 
       {(() => {
-        const entry = reportEntryId ? worklist.find(e => e._id === reportEntryId) : null;
-        const contact = entry ? contacts.find(c => c._id === entry.contactId) : null;
-        const device = entry ? devices.find(d => d._id === entry.deviceId) : null;
-        const action = entry ? actions.find(a => a._id === entry.actionId) : null;
+        const entry = reportEntryId ? enrichedWorklist.find(e => e._id === reportEntryId) : null;
+        const contact = entry ? contactMap.get(entry.contactId) ?? null : null;
+        const device  = entry ? deviceMap.get(entry.deviceId)   ?? null : null;
+        const action  = entry ? actionMap.get(entry.actionId)   ?? null : null;
         return (
           <WorklistReport
             open={!!reportEntryId}

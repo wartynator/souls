@@ -29,28 +29,10 @@ export const list = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
-
-    const entries = await ctx.db
+    return ctx.db
       .query("worklist")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
-
-    return Promise.all(
-      entries.map(async (e) => {
-        const contact = await ctx.db.get(e.contactId);
-        const device = await ctx.db.get(e.deviceId);
-        const action = await ctx.db.get(e.actionId);
-        const contactName = contact
-          ? [contact.name, contact.surname].filter(Boolean).join(" ")
-          : null;
-        return {
-          ...e,
-          contactName,
-          deviceName: device?.name ?? null,
-          actionName: action?.name ?? null,
-        };
-      }),
-    );
   },
 });
 
