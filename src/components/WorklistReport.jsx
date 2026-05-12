@@ -106,12 +106,11 @@ export default function WorklistReport({ open, entry, contact, device, action, c
             <img className="report__logo" src="/termos_logo.jpeg" alt="Termos" />
             <div className="report__company">
               <p className="report__company-name">{co.name}</p>
-              {co.street  && <p>{co.street}</p>}
-              {co.city    && <p>{co.city}</p>}
-              {co.country && <p>{co.country}</p>}
-              {co.phone   && <p>{co.phone}</p>}
-              {co.email   && <p>{co.email}</p>}
-              {co.vatId   && <p>{co.vatId}</p>}
+              {co.street && <p>{co.street}{co.city ? `, ${co.city}` : ""}{co.country ? `, ${co.country}` : ""}</p>}
+              {!co.street && co.city && <p>{co.city}{co.country ? `, ${co.country}` : ""}</p>}
+              {!co.street && !co.city && co.country && <p>{co.country}</p>}
+              {(co.phone || co.email) && <p>{[co.phone, co.email].filter(Boolean).join(" · ")}</p>}
+              {co.vatId && <p>{co.vatId}</p>}
             </div>
           </header>
 
