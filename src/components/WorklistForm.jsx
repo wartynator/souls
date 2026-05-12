@@ -2,6 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import Dialog from "./Dialog.jsx";
+import ContactForm from "./ContactForm.jsx";
+import DeviceForm from "./DeviceForm.jsx";
+import ActionForm from "./ActionForm.jsx";
 import { useToast } from "./Toast.jsx";
 import { useLocale } from "../i18n.jsx";
 
@@ -53,6 +56,8 @@ export default function WorklistForm({
   const [status, setStatus] = useState("pending");
   const [nextServiceDate, setNextServiceDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [nestedForm, setNestedForm] = useState(null); // "contact" | "device" | "action" | null
+  const [pendingContactName, setPendingContactName] = useState("");
 
   const sortedContacts = useMemo(
     () =>
@@ -268,7 +273,7 @@ export default function WorklistForm({
                 autoComplete="off"
                 autoFocus
               />
-              {contactOpen && contactOptions.length > 0 && (
+              {contactOpen && (contactOptions.length > 0 || contactSearch.trim()) && (
                 <ul className="combobox__list" role="listbox">
                   {contactOptions.map((c, i) => (
                     <li
@@ -281,10 +286,37 @@ export default function WorklistForm({
                       {contactFullName(c) || t("contactUnnamed")}
                     </li>
                   ))}
+                  <li
+                    role="option"
+                    className="combobox__option combobox__option--create"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setPendingContactName(contactSearch.trim());
+                      setContactOpen(false);
+                      setNestedForm("contact");
+                    }}
+                  >
+                    {contactSearch.trim()
+                      ? t("worklistCreateNamed", { name: contactSearch.trim() })
+                      : t("worklistNewContact")}
+                  </li>
                 </ul>
               )}
-              {contactOpen && contactOptions.length === 0 && (
-                <div className="combobox__empty">{t("emptyNoMatchesTitle")}</div>
+              {contactOpen && contactOptions.length === 0 && !contactSearch.trim() && (
+                <ul className="combobox__list" role="listbox">
+                  <li
+                    role="option"
+                    className="combobox__option combobox__option--create"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      setPendingContactName("");
+                      setContactOpen(false);
+                      setNestedForm("contact");
+                    }}
+                  >
+                    {t("worklistNewContact")}
+                  </li>
+                </ul>
               )}
             </div>
           </label>
@@ -295,39 +327,77 @@ export default function WorklistForm({
             {!contactId ? (
               <p className="field__hint">{t("worklistSelectContactFirst")}</p>
             ) : contactDevices.length === 0 ? (
-              <p className="field__hint">{t("worklistNoDevices")}</p>
+              <div className="picker-row">
+                <p className="field__hint" style={{ flex: 1 }}>{t("worklistNoDevices")}</p>
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--small"
+                  onClick={() => setNestedForm("device")}
+                >
+                  {t("worklistNewDevice")}
+                </button>
+              </div>
             ) : (
-              <select
-                className="field__input"
-                required
-                value={deviceId}
-                onChange={(e) => setDeviceId(e.target.value)}
-              >
-                <option value="" disabled>{t("worklistPickDevice")}</option>
-                {contactDevices.map((d) => (
-                  <option key={d._id} value={d._id}>{d.name}</option>
-                ))}
-              </select>
+              <div className="picker-row">
+                <select
+                  className="field__input"
+                  style={{ flex: 1 }}
+                  required
+                  value={deviceId}
+                  onChange={(e) => setDeviceId(e.target.value)}
+                >
+                  <option value="" disabled>{t("worklistPickDevice")}</option>
+                  {contactDevices.map((d) => (
+                    <option key={d._id} value={d._id}>{d.name}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--small picker-row__add"
+                  onClick={() => setNestedForm("device")}
+                  title={t("worklistNewDevice")}
+                  aria-label={t("worklistNewDevice")}
+                >+</button>
+              </div>
             )}
           </label>
 
-          {/* Action from catalog */}
+          {/* Action / Service from catalog */}
           <label className="field">
             <span className="field__label">{t("worklistFieldActionType")}</span>
             {actions.length === 0 ? (
-              <p className="field__hint">{t("worklistNoActions")}</p>
+              <div className="picker-row">
+                <p className="field__hint" style={{ flex: 1 }}>{t("worklistNoActions")}</p>
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--small"
+                  onClick={() => setNestedForm("action")}
+                >
+                  {t("worklistNewService")}
+                </button>
+              </div>
             ) : (
-              <select
-                className="field__input"
-                required
-                value={actionId}
-                onChange={(e) => setActionId(e.target.value)}
-              >
-                <option value="" disabled>{t("worklistPickAction")}</option>
-                {actions.map((a) => (
-                  <option key={a._id} value={a._id}>{a.name}</option>
-                ))}
-              </select>
+              <div className="picker-row">
+                <select
+                  className="field__input"
+                  style={{ flex: 1 }}
+                  required
+                  value={actionId}
+                  onChange={(e) => setActionId(e.target.value)}
+                >
+                  <option value="" disabled>{t("worklistPickAction")}</option>
+                  {actions.map((a) => (
+                    <option key={a._id} value={a._id}>{a.name}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="btn btn--ghost btn--small picker-row__add"
+                  onClick={() => setNestedForm("action")}
+                  title={t("worklistNewService")}
+                  aria-label={t("worklistNewService")}
+                >+</button>
+              </div>
             )}
           </label>
 
@@ -409,13 +479,44 @@ export default function WorklistForm({
             <button
               type="submit"
               className="btn btn--primary"
-              disabled={submitting || actions.length === 0}
+              disabled={submitting}
             >
               {submitting ? t("btnSaving") : t("btnSave")}
             </button>
           </div>
         </footer>
       </form>
+
+      {/* Nested create forms */}
+      <ContactForm
+        open={nestedForm === "contact"}
+        contactId={null}
+        contacts={contacts}
+        initialName={pendingContactName}
+        onClose={() => setNestedForm(null)}
+        onSaved={(newId) => {
+          setContactId(newId);
+          setPendingContactName("");
+          // contactSearch will be refreshed by the live query; set it eagerly
+          const fromName = pendingContactName.trim();
+          if (fromName) setContactSearch(fromName);
+        }}
+      />
+      <DeviceForm
+        open={nestedForm === "device"}
+        deviceId={null}
+        presetOwnerId={contactId || null}
+        devices={devices}
+        contacts={contacts}
+        onClose={() => setNestedForm(null)}
+        onSaved={(newId) => setDeviceId(newId)}
+      />
+      <ActionForm
+        open={nestedForm === "action"}
+        actionId={null}
+        onClose={() => setNestedForm(null)}
+        onSaved={(newId) => setActionId(newId)}
+      />
     </Dialog>
   );
 }

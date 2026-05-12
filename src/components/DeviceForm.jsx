@@ -15,6 +15,7 @@ export default function DeviceForm({
   onClose,
   onDelete,
   onAddWorklist,
+  onSaved,
 }) {
   const toast = useToast();
   const { t } = useLocale();
@@ -170,7 +171,7 @@ export default function DeviceForm({
         });
         toast.show(t("toastDeviceUpdated"));
       } else {
-        await createDevice({
+        const newId = await createDevice({
           contactId: ownerId,
           name,
           manufacturer: manufacturer || undefined,
@@ -180,6 +181,7 @@ export default function DeviceForm({
           notes: notes || undefined,
         });
         toast.show(t("toastDeviceAdded"));
+        onSaved?.(newId);
       }
       onClose();
     } catch (err) {

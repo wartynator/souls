@@ -5,7 +5,7 @@ import Dialog from "./Dialog.jsx";
 import { useToast } from "./Toast.jsx";
 import { useLocale } from "../i18n.jsx";
 
-export default function ContactForm({ open, contactId, contacts, onClose, onDelete }) {
+export default function ContactForm({ open, contactId, contacts, onClose, onDelete, onSaved, initialName }) {
   const toast = useToast();
   const { t } = useLocale();
   const createContact = useMutation(api.contacts.create);
@@ -35,7 +35,7 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
       setEmail(editing.email || "");
       setNotes(editing.notes || "");
     } else {
-      setName("");
+      setName(initialName || "");
       setSurname("");
       setAddress("");
       setCity("");
@@ -68,7 +68,7 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
         });
         toast.show(t("toastContactUpdated"));
       } else {
-        await createContact({
+        const newId = await createContact({
           name,
           surname: surname || undefined,
           address: address || undefined,
@@ -78,6 +78,7 @@ export default function ContactForm({ open, contactId, contacts, onClose, onDele
           notes: notes || undefined,
         });
         toast.show(t("toastContactAdded"));
+        onSaved?.(newId);
       }
       onClose();
     } catch (err) {
