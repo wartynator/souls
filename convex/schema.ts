@@ -63,4 +63,15 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_contact", ["contactId"])
     .index("by_device", ["deviceId"]),
+
+  companies: defineTable({
+    userId: v.id("users"),
+    name: v.string(),
+    street: v.optional(v.string()),
+    city: v.optional(v.string()),
+    country: v.optional(v.string()),
+    phone: v.optional(v.string()),
+    email: v.optional(v.string()),
+    vatId: v.optional(v.string()),
+  }).index("by_user", ["userId"]),
 });
