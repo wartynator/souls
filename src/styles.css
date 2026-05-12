@@ -676,6 +676,31 @@ select.field__input {
 .combobox__option:hover,
 .combobox__option.is-highlight { background: var(--bg-soft); }
 .combobox__option.is-selected { font-weight: 500; }
+.combobox__option--create {
+  border-top: 1px dashed var(--rule);
+  color: var(--ink-2);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.combobox__option--create:hover { color: var(--ink); background: var(--bg-soft); }
+
+/* Picker row: select + small "+" button side-by-side */
+.picker-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.picker-row__add {
+  width: 38px;
+  height: 38px;
+  padding: 0 !important;
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .combobox__empty {
   padding: 10px 12px;
   font-size: 14px;
@@ -790,6 +815,28 @@ select.field__input {
   margin: 0;
   line-height: 1.55;
 }
+
+/* ---------- Floating Action Button (mobile) ---------- */
+.fab {
+  display: none;
+  position: fixed;
+  right: 16px;
+  bottom: calc(76px + env(safe-area-inset-bottom));
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ink);
+  color: var(--bg);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  z-index: 50;
+  align-items: center;
+  justify-content: center;
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+}
+.fab:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22); }
+.fab:active { transform: translateY(0); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
 
 /* ---------- Toast ---------- */
 .toast {
@@ -1538,7 +1585,12 @@ select.field__input {
   .toolbar { padding: 8px 16px 12px; }
   .toolbar .btn__label { display: none; }
   .toolbar .btn { width: 40px; height: 40px; padding: 0; justify-content: center; flex-shrink: 0; }
+  /* Hide the toolbar's Add button on mobile — replaced by the FAB */
+  .toolbar > .btn--primary { display: none; }
   .main { padding: 0 16px 24px; }
+
+  /* Show floating action button on mobile */
+  .fab { display: flex; }
 
   /* Lift toast above the bottom bar */
   .toast { bottom: 76px; }

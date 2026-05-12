@@ -5,7 +5,7 @@ import Dialog from "./Dialog.jsx";
 import { useToast } from "./Toast.jsx";
 import { useLocale } from "../i18n.jsx";
 
-export default function ActionForm({ open, actionId, onClose, onDelete }) {
+export default function ActionForm({ open, actionId, onClose, onDelete, onSaved, initialName }) {
   const { t } = useLocale();
   const toast = useToast();
   const allActions = useQuery(api.actions.list);
@@ -26,7 +26,7 @@ export default function ActionForm({ open, actionId, onClose, onDelete }) {
       setPrice(editing.price != null ? String(editing.price) : "");
       setNotes(editing.notes ?? "");
     } else {
-      setName("");
+      setName(initialName || "");
       setPrice("");
       setNotes("");
     }
@@ -47,8 +47,9 @@ export default function ActionForm({ open, actionId, onClose, onDelete }) {
         await updateAction({ id: actionId, name: name.trim(), price: parsedPrice, notes: notes.trim() || undefined });
         toast.show(t("toastActionUpdated"));
       } else {
-        await createAction({ name: name.trim(), price: parsedPrice, notes: notes.trim() || undefined });
+        const newId = await createAction({ name: name.trim(), price: parsedPrice, notes: notes.trim() || undefined });
         toast.show(t("toastActionAdded"));
+        onSaved?.(newId);
       }
       onClose();
     } catch {
