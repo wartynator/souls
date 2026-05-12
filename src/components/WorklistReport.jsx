@@ -1,7 +1,5 @@
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 import { useLocale } from "../i18n.jsx";
 
 const COMPANY_FALLBACK = {
@@ -40,6 +38,10 @@ export default function WorklistReport({ open, entry, contact, device, action, c
     if (!reportRef.current || downloading) return;
     setDownloading(true);
     try {
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
       const canvas = await html2canvas(reportRef.current, {
         scale: 2,
         useCORS: true,
