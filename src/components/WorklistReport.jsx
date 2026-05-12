@@ -6,7 +6,6 @@ import { useLocale } from "../i18n.jsx";
 
 const COMPANY = {
   name: "TERMOS",
-  person: "Marcel Štedl",
   street: "M.R.Štefanika 2",
   city: "07501 TREBIŠOV",
   country: "SLOVENSKO",
@@ -106,7 +105,6 @@ export default function WorklistReport({ open, entry, contact, device, action, o
             <img className="report__logo" src="/termos_logo.jpeg" alt="Termos" />
             <div className="report__company">
               <p className="report__company-name">{COMPANY.name}</p>
-              <p>{COMPANY.person}</p>
               <p>{COMPANY.street}</p>
               <p>{COMPANY.city}</p>
               <p>{COMPANY.country}</p>
