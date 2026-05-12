@@ -231,43 +231,6 @@ export default function Souls() {
 
   /* ---------- render ---------- */
 
-  const darkModeButton = (
-    <button
-      className="btn btn--text btn--small"
-      onClick={() => setDarkMode(d => !d)}
-      aria-label={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-      title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
-    >
-      {darkMode ? (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5" />
-          <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-      ) : (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      )}
-    </button>
-  );
-
-  const langButton = (
-    <button
-      className="btn btn--text btn--small"
-      style={{ fontWeight: locale === "sk" ? 700 : 400 }}
-      onClick={() => setLocale(locale === "en" ? "sk" : "en")}
-      aria-label="Toggle language"
-    >
-      {locale === "en" ? "SK" : "EN"}
-    </button>
-  );
-
-  const signOutButton = (
-    <button className="btn btn--text btn--small" onClick={() => signOut()}>
-      {t("headerSignOut")}
-    </button>
-  );
-
   const settingsButton = (
     <button
       className="btn btn--text btn--small"
@@ -361,9 +324,6 @@ export default function Souls() {
           )}
           <div className="sidebar__controls">
             {settingsButton}
-            {darkModeButton}
-            {langButton}
-            {signOutButton}
           </div>
         </div>
       </aside>
