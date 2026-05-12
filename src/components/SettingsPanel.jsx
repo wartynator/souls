@@ -1,6 +1,6 @@
 import { useLocale } from "../i18n.jsx";
 
-export default function SettingsPanel({ open, email, darkMode, onToggleDark, onSignOut, onClose }) {
+export default function SettingsPanel({ open, email, company, darkMode, onToggleDark, onSignOut, onClose, onEditCompany }) {
   const { locale, setLocale, t } = useLocale();
 
   return (
@@ -18,6 +18,23 @@ export default function SettingsPanel({ open, email, darkMode, onToggleDark, onS
 
         <div className="settings-panel__body">
           {email && <p className="settings-panel__email">{email}</p>}
+
+          {/* Company */}
+          <div className="settings-row">
+            <span className="settings-row__label">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <rect x="2" y="7" width="20" height="14" rx="2"/>
+                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+              </svg>
+              <span>
+                {t("settingsCompany")}
+                {company?.name && <span className="settings-row__sub">{company.name}</span>}
+              </span>
+            </span>
+            <button className="btn btn--ghost btn--small" onClick={onEditCompany}>
+              {company ? t("btnEdit") : t("btnSetUp")}
+            </button>
+          </div>
 
           {/* Dark mode */}
           <div className="settings-row">
