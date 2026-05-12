@@ -4,6 +4,13 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { useLocale } from "../i18n.jsx";
 
+const COMPANY = {
+  name: "TERMOS",
+  street: "M.R.Štefanika 2",
+  city: "07501 TREBIŠOV",
+  country: "SLOVENSKO",
+};
+
 export default function WorklistReport({ open, entry, contact, device, action, onClose }) {
   const { locale, t } = useLocale();
   const reportRef = useRef(null);
@@ -26,7 +33,7 @@ export default function WorklistReport({ open, entry, contact, device, action, o
     }).format(price);
 
   const contactName = [contact.name, contact.surname].filter(Boolean).join(" ");
-  const ref = `#${entry._id.slice(-6).toUpperCase()}`;
+  const ref = entry._id.slice(-6).toUpperCase();
 
   const handleDownload = async () => {
     if (!reportRef.current || downloading) return;
@@ -52,7 +59,7 @@ export default function WorklistReport({ open, entry, contact, device, action, o
         y += pageH;
       }
 
-      const filename = `report-${contactName.replace(/\s+/g, "-") || "service"}-${entry._id.slice(-6).toUpperCase()}.pdf`;
+      const filename = `report-${contactName.replace(/\s+/g, "-") || "service"}-${ref}.pdf`;
       pdf.save(filename);
     } finally {
       setDownloading(false);
@@ -93,76 +100,82 @@ export default function WorklistReport({ open, entry, contact, device, action, o
       <div className="report-doc-wrap">
         <article className="report" ref={reportRef}>
 
-          {/* Header: ref left · title center · logo right */}
+          {/* Header: logo left — company info right */}
           <header className="report__header">
-            <span className="report__ref">{ref}</span>
-            <div className="report__header-center">
-              <h1 className="report__title">{t("reportTitle")}</h1>
-              <p className="report__date">{formatDate(entry.date)}</p>
-            </div>
             <img className="report__logo" src="/termos_logo.jpeg" alt="Termos" />
+            <div className="report__company">
+              <p className="report__company-name">{COMPANY.name}</p>
+              <p>{COMPANY.street}</p>
+              <p>{COMPANY.city}</p>
+              <p>{COMPANY.country}</p>
+            </div>
           </header>
 
-          {/* Customer + Device — two-column grid */}
-          <div className="report__cols">
-            <div className="report__col">
-              <p className="report__col-title">{t("reportSection1")}</p>
-              {contactName && <ReportRow label={t("fieldName")} value={contactName} />}
-              {contact.phone && <ReportRow label={t("fieldPhone")} value={contact.phone} />}
-              {contact.email && <ReportRow label={t("fieldEmail")} value={contact.email} />}
-              {contact.address && <ReportRow label={t("fieldAddress")} value={contact.address} />}
-              {contact.city && <ReportRow label={t("fieldCity")} value={contact.city} />}
+          {/* Page title */}
+          <h1 className="report__title">{t("reportTitle")}</h1>
+
+          {/* Section 1 — Customer */}
+          <ReportSection label={t("reportSection1")}>
+            <div className="report__fields">
+              <Field label={t("fieldName")} value={contactName} wide />
+              {contact.address && <Field label={t("fieldAddress")} value={contact.address} />}
+              {contact.city    && <Field label={t("fieldCity")}    value={contact.city}    />}
+              {contact.phone   && <Field label={t("fieldPhone")}   value={contact.phone}   />}
+              {contact.email   && <Field label={t("fieldEmail")}   value={contact.email}   />}
             </div>
-            <div className="report__col">
-              <p className="report__col-title">{t("reportSection2")}</p>
-              {device.name && <ReportRow label={t("fieldDeviceName")} value={device.name} />}
-              {device.manufacturer && <ReportRow label={t("fieldManufacturer")} value={device.manufacturer} />}
-              {device.type && <ReportRow label={t("fieldDeviceType")} value={device.type} />}
-              {device.year && <ReportRow label={t("fieldYear")} value={device.year} />}
+          </ReportSection>
+
+          {/* Section 2 — Device */}
+          <ReportSection label={t("reportSection2")}>
+            <div className="report__fields">
+              {device.name         && <Field label={t("fieldDeviceName")}   value={device.name}         />}
+              {device.manufacturer && <Field label={t("fieldManufacturer")} value={device.manufacturer} />}
+              {device.type         && <Field label={t("fieldDeviceType")}   value={device.type}         />}
+              {device.year         && <Field label={t("fieldYear")}         value={device.year}         />}
               {(device.serialNumber || device.barcode) && (
-                <ReportRow label={t("fieldSerialNumber")} value={device.serialNumber || device.barcode} />
+                <Field label={t("fieldSerialNumber")} value={device.serialNumber || device.barcode} />
               )}
             </div>
-          </div>
+          </ReportSection>
 
-          {/* Service */}
-          <section className="report__section">
-            <div className="report__section-head">
-              <span className="report__num">03</span>
-              <span className="report__section-title">{t("reportSection3")}</span>
-            </div>
-            <div className="report__section-body">
-              {action.name && <p className="report__action-name">{action.name}</p>}
-              {action.notes && <p className="report__notes">{action.notes}</p>}
-              {entry.notes && <p className="report__notes">{entry.notes}</p>}
+          {/* Section 3 — Service */}
+          <ReportSection label={t("reportSection3")}>
+            <div className="report__fields">
+              {action.name  && <Field label={locale === "sk" ? "Úkon" : "Service"}     value={action.name}  wide />}
+              {action.notes && <Field label={locale === "sk" ? "Popis" : "Description"} value={action.notes} wide />}
+              {entry.notes  && <Field label={locale === "sk" ? "Poznámky" : "Notes"}   value={entry.notes}  wide />}
               {action.price != null && (
-                <div className="report__price-row">
-                  <span className="report__price-label">{locale === "sk" ? "Celkom" : "Total"}</span>
-                  <span className="report__price-value">{formatPrice(action.price)}</span>
-                </div>
+                <Field
+                  label={locale === "sk" ? "Celkom" : "Total"}
+                  value={formatPrice(action.price)}
+                />
               )}
             </div>
-          </section>
+          </ReportSection>
 
-          {/* Signature */}
+          {/* Signature footer */}
           <footer className="report__signature">
-            <div className="report__sig-grid">
-              <div className="report__sig-item">
-                <span className="report__sig-label">{t("reportSignatureTech")}</span>
+            <div className="report__sig-cols">
+              <div className="report__sig-col">
+                <p className="report__sig-pre">{formatDate(entry.date)}</p>
                 <div className="report__sig-line" />
+                <p className="report__sig-label">{t("reportSignatureDate")}</p>
               </div>
-              <div className="report__sig-row">
-                <div className="report__sig-item">
-                  <span className="report__sig-label">{t("reportSignatureCustomer")}</span>
-                  <div className="report__sig-line" />
-                </div>
-                <div className="report__sig-item">
-                  <span className="report__sig-label">{t("reportSignatureDate")}</span>
-                  <div className="report__sig-line" />
-                </div>
+              <div className="report__sig-col">
+                <p className="report__sig-pre">&nbsp;</p>
+                <div className="report__sig-line" />
+                <p className="report__sig-label">{t("reportSignatureTech")}</p>
+              </div>
+              <div className="report__sig-col">
+                <p className="report__sig-pre">&nbsp;</p>
+                <div className="report__sig-line" />
+                <p className="report__sig-label">{t("reportSignatureCustomer")}</p>
               </div>
             </div>
           </footer>
+
+          {/* Reference */}
+          <p className="report__ref">{ref}</p>
 
         </article>
       </div>
@@ -171,12 +184,22 @@ export default function WorklistReport({ open, entry, contact, device, action, o
   );
 }
 
-function ReportRow({ label, value }) {
+function ReportSection({ label, children }) {
+  return (
+    <section className="report__section">
+      <p className="report__section-label">{label}</p>
+      <div className="report__rule" />
+      {children}
+    </section>
+  );
+}
+
+function Field({ label, value, wide }) {
   if (value == null || value === "") return null;
   return (
-    <div className="report__row">
-      <span className="report__row-label">{label}</span>
-      <span className="report__row-value">{value}</span>
+    <div className={`report__field${wide ? " report__field--wide" : ""}`}>
+      <span className="report__field-label">{label}</span>
+      <span className="report__field-value">{value}</span>
     </div>
   );
 }
