@@ -1380,6 +1380,41 @@ select.field__input {
   margin-top: 1px;
 }
 
+/* ── Company logo upload ── */
+.company-logo-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  width: fit-content;
+}
+.company-logo-upload__preview {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+  background: var(--bg-soft);
+}
+.company-logo-upload__placeholder {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  border: 1.5px dashed var(--rule);
+  background: var(--bg-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-mute);
+  flex-shrink: 0;
+}
+.company-logo-upload__label {
+  font-size: 13px;
+  color: var(--accent);
+  font-weight: 500;
+}
+.company-logo-upload:hover .company-logo-upload__label { text-decoration: underline; }
+
 .settings-toggle {
   width: 44px;
   height: 26px;

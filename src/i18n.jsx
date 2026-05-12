@@ -128,6 +128,9 @@ const en = {
   companyEmailPlaceholder: "info@company.com",
   companyVatId: "VAT / IČO",
   companyVatIdPlaceholder: "e.g. SK1234567890",
+  companyLogo: "Logo",
+  companyLogoUpload: "Upload logo",
+  companyLogoChange: "Change logo",
   // action form / device action form
   actionFormNew: "New action",
   actionFormEdit: "Edit action",
@@ -375,6 +378,9 @@ const sk = {
   companyEmailPlaceholder: "info@firma.sk",
   companyVatId: "IČO / DIČ",
   companyVatIdPlaceholder: "napr. SK1234567890",
+  companyLogo: "Logo",
+  companyLogoUpload: "Nahrať logo",
+  companyLogoChange: "Zmeniť logo",
   // action form / device action form
   actionFormNew: "Nová akcia",
   actionFormEdit: "Upraviť akciu",

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useLocale } from "../i18n.jsx";
@@ -6,15 +6,20 @@ import { useLocale } from "../i18n.jsx";
 export default function CompanyForm({ open, company, onClose }) {
   const { t } = useLocale();
   const upsert = useMutation(api.companies.upsert);
+  const generateUploadUrl = useMutation(api.companies.generateUploadUrl);
+  const fileInputRef = useRef(null);
 
-  const [name, setName]       = useState("");
-  const [street, setStreet]   = useState("");
-  const [city, setCity]       = useState("");
-  const [country, setCountry] = useState("");
-  const [phone, setPhone]     = useState("");
-  const [email, setEmail]     = useState("");
-  const [vatId, setVatId]     = useState("");
-  const [saving, setSaving]   = useState(false);
+  const [name, setName]         = useState("");
+  const [street, setStreet]     = useState("");
+  const [city, setCity]         = useState("");
+  const [country, setCountry]   = useState("");
+  const [phone, setPhone]       = useState("");
+  const [email, setEmail]       = useState("");
+  const [vatId, setVatId]       = useState("");
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoId, setLogoId]     = useState(undefined);
+  const [saving, setSaving]     = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -25,16 +30,37 @@ export default function CompanyForm({ open, company, onClose }) {
       setPhone(company?.phone   ?? "");
       setEmail(company?.email   ?? "");
       setVatId(company?.vatId   ?? "");
+      setLogoPreview(company?.logoUrl ?? null);
+      setLogoFile(null);
+      setLogoId(company?.logoId ?? undefined);
     }
   }, [open, company]);
 
   if (!open) return null;
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setLogoFile(file);
+    setLogoPreview(URL.createObjectURL(file));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim()) return;
     setSaving(true);
     try {
+      let finalLogoId = logoId;
+      if (logoFile) {
+        const uploadUrl = await generateUploadUrl();
+        const res = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": logoFile.type },
+          body: logoFile,
+        });
+        const { storageId } = await res.json();
+        finalLogoId = storageId;
+      }
       await upsert({
         name: name.trim(),
         street:  street.trim()  || undefined,
@@ -43,6 +69,7 @@ export default function CompanyForm({ open, company, onClose }) {
         phone:   phone.trim()   || undefined,
         email:   email.trim()   || undefined,
         vatId:   vatId.trim()   || undefined,
+        logoId:  finalLogoId,
       });
       onClose();
     } finally {
@@ -65,6 +92,34 @@ export default function CompanyForm({ open, company, onClose }) {
         </div>
 
         <form className="dialog__body" onSubmit={handleSubmit}>
+          {/* Logo upload */}
+          <div className="field">
+            <label className="field__label">{t("companyLogo")}</label>
+            <div className="company-logo-upload" onClick={() => fileInputRef.current?.click()}>
+              {logoPreview ? (
+                <img src={logoPreview} alt="Logo preview" className="company-logo-upload__preview" />
+              ) : (
+                <div className="company-logo-upload__placeholder">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                </div>
+              )}
+              <span className="company-logo-upload__label">
+                {logoPreview ? t("companyLogoChange") : t("companyLogoUpload")}
+              </span>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={handleLogoChange}
+            />
+          </div>
+
           <div className="field">
             <label className="field__label">{t("companyName")} *</label>
             <input
