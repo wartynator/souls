@@ -902,253 +902,156 @@ select.field__input {
   padding: 32px 20px 80px;
 }
 
+/* ── Document ── */
 .report {
   width: 100%;
   background: #fff;
-  padding: 56px 64px;
+  padding: 56px 64px 48px;
   box-shadow: 0 2px 8px rgba(0,0,0,.2), 0 16px 48px rgba(0,0,0,.3);
-  color: #111;
+  color: #1a1a1a;
   font-family: var(--font-sans);
 }
 
-/* Header: ref left · title+date center · logo right */
+/* Header: logo left, company info right */
 .report__header {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  padding-bottom: 24px;
-  margin-bottom: 36px;
-  border-bottom: 2px solid #111;
-}
-
-.report__header-center {
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 32px;
 }
 
 .report__logo {
-  height: 64px;
+  height: 72px;
   width: auto;
   object-fit: contain;
   display: block;
-  margin-left: auto;
 }
 
-.report__title {
-  font-family: var(--font-serif);
-  font-size: 34px;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-  color: #111;
-  line-height: 1;
-  margin: 0 0 10px;
-}
-
-.report__date {
-  font-size: 13px;
+.report__company {
+  text-align: right;
+  font-size: 12px;
+  line-height: 1.7;
   color: #444;
-  margin: 0;
 }
-
-.report__ref {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  color: #666;
-}
-
-/* Two-column Customer / Device grid */
-.report__cols {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  margin-bottom: 32px;
-  border: 1px solid #ebebeb;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.report__col {
-  padding: 24px 28px;
-}
-.report__col:first-child {
-  border-right: 1px solid #ebebeb;
-}
-
-.report__col-title {
-  font-size: 10px;
+.report__company-name {
   font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #555;
-  margin: 0 0 16px;
+  color: #1a1a1a;
 }
 
-/* Field rows inside columns */
-.report__row {
-  display: grid;
-  grid-template-columns: 110px 1fr;
-  gap: 8px;
-  align-items: baseline;
-  margin-bottom: 8px;
-}
-.report__row:last-child { margin-bottom: 0; }
-
-.report__row-label {
-  font-size: 11px;
-  color: #555;
-  font-weight: 500;
+/* Page title */
+.report__title {
+  font-size: 38px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 36px;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 
-.report__row-value {
-  font-size: 13px;
-  color: #111;
-  line-height: 1.5;
-}
-
-/* Service section */
+/* Sections */
 .report__section {
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
-.report__section-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border-left: 3px solid #111;
-  padding-left: 12px;
+.report__section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e87714;
+  margin: 0 0 6px;
+}
+
+.report__rule {
+  border: none;
+  border-top: 1px solid #d8d8d8;
   margin-bottom: 16px;
 }
 
-.report__num {
-  font-family: var(--font-serif);
-  font-size: 10px;
-  color: #777;
-  letter-spacing: 0.04em;
+/* Fields grid */
+.report__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
 }
 
-.report__section-title {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #111;
-}
-
-.report__section-body {
-  padding-left: 15px;
+.report__field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 2px;
+}
+.report__field--wide {
+  grid-column: 1 / -1;
 }
 
-.report__action-name {
-  font-size: 15px;
-  font-weight: 500;
-  color: #111;
-  margin: 0;
-}
-
-.report__notes {
-  font-size: 13px;
-  color: #333;
-  font-style: italic;
-  margin: 0;
-}
-
-.report__price-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  border-top: 1px solid #ebebeb;
-  margin-top: 12px;
-  padding-top: 12px;
-}
-
-.report__price-label {
-  font-size: 12px;
-  color: #555;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+.report__field-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: #888;
 }
 
-.report__price-value {
-  font-size: 18px;
-  font-weight: 600;
-  color: #111;
-  letter-spacing: -0.01em;
+.report__field-value {
+  font-size: 13px;
+  color: #1a1a1a;
+  line-height: 1.5;
 }
 
-/* Signature block */
+/* Signature */
 .report__signature {
-  margin-top: 48px;
-  padding-top: 28px;
-  border-top: 1px solid #e0e0e0;
+  margin-top: 64px;
 }
 
-.report__sig-grid {
+.report__sig-cols {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 28px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
 }
 
-.report__sig-row {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 32px;
+.report__sig-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.report__sig-pre {
+  font-size: 13px;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+  min-height: 20px;
+}
+
+.report__sig-line {
+  border-bottom: 1px solid #aaa;
+  margin-bottom: 6px;
 }
 
 .report__sig-label {
   font-size: 11px;
-  color: #555;
+  color: #888;
   font-weight: 500;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-  display: block;
 }
 
-.report__sig-line {
-  border-bottom: 1px solid #888;
+/* Reference */
+.report__ref {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: #bbb;
+  text-transform: uppercase;
 }
 
 @media print {
-  /* Fallback — hide everything if user manually triggers browser print */
   .report-overlay { display: none !important; }
 }
 
 @media (max-width: 600px) {
-  .report { padding: 24px 16px; }
-
-  /* Header: logo + ref on one line, title + date centred below */
-  .report__header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    text-align: center;
-  }
-  .report__logo {
-    order: 0;
-    height: 52px;
-    margin: 0 auto;
-  }
-  .report__header-center {
-    order: 1;
-    text-align: center;
-  }
-  .report__ref {
-    order: 2;
-    font-size: 10px;
-  }
-  .report__title { font-size: 26px; }
-
-  /* Collapse two-column grid to single column */
-  .report__cols { grid-template-columns: 1fr; }
-  .report__col:first-child { border-right: none; border-bottom: 1px solid #ebebeb; }
-  .report__row { grid-template-columns: 90px 1fr; }
-
-  /* Signature */
-  .report__sig-row { grid-template-columns: 1fr; gap: 20px; }
+  .report { padding: 24px 20px 32px; }
+  .report__title { font-size: 28px; }
+  .report__header { flex-direction: column; gap: 16px; }
+  .report__company { text-align: left; }
+  .report__fields { grid-template-columns: 1fr; }
+  .report__field--wide { grid-column: 1; }
+  .report__sig-cols { grid-template-columns: 1fr; gap: 20px; }
 }
 
 /* ---------- View toggle (List / Calendar) ---------- */
